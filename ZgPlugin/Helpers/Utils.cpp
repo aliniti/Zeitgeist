@@ -3,22 +3,17 @@
 
 namespace Utils
 {
-    bool IsValidTarget( GameObject* pObject, float range )
+    auto IsValidTarget( GameObject* pObject, float range ) -> bool
     {
         if ( pObject == nullptr || !pObject->IsAttackable( true, false ) )
         {
             return false;
         }
-        
-        return GetPlayer(  )->DistanceXZ( pObject ) <= range;
+
+        return GetPlayer( )->DistanceXZ( pObject ) <= range;
     }
 
-    GameObject* Get( uint16_t handle )
-    {
-        return g_pExportedObjectManager->GetObjectByHandle( handle );
-    }
-
-    bool UnderEnemyTurret( )
+    auto UnderEnemyTurret( ) -> bool
     {
         int turrets = 0;
 
@@ -36,7 +31,7 @@ namespace Utils
         return turrets > 0;
     }
 
-    bool UnderEnemyTurret( Vector3 pos )
+    auto UnderEnemyTurret( Vector3 pos ) -> bool
     {
         int turrets = 0;
 
@@ -54,7 +49,25 @@ namespace Utils
         return turrets > 0;
     }
 
-    int CountEnemiesInRange( GameObject* pObject, float range )
+    auto UnderEnemyTurret( GameObject* unit ) -> bool
+    {
+        int turrets = 0;
+
+        for ( auto i : g_pExportedEntityManager->Turrets( ) )
+        {
+            if ( i->IsEnemy( ) && !i->IsDead( ) )
+            {
+                if ( i->DistanceXZ( unit->Position( ) ) <= 1100 )
+                {
+                    turrets++;
+                }
+            }
+        }
+
+        return turrets > 0;
+    }
+
+    auto CountEnemiesInRange( GameObject* pObject, float range ) -> int
     {
         int units = 0;
 
