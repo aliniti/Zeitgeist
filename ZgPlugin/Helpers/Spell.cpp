@@ -5,6 +5,16 @@ Spell::Spell( SpellSlot slot, float range )
     this->slot = slot;
     this->range = range;
     this->time = 0;
+    this->from = GetPlayer(  )->Position(  );
+}
+
+void Spell::SetSkillShot( float delay, float speed, float radius, bool hitbox, PredictionCollisionFlags collision )
+{
+    this->delay = delay;
+    this->speed = speed;
+    this->radius = radius;
+    this->hitbox = hitbox;
+    this->collision = collision;
 }
 
 float Spell::Range( ) const
@@ -79,4 +89,53 @@ void Spell::Cast( Vector3 position )
             }
         }
     }
+}
+
+void Spell::SetFrom( Vector3 pos )
+{
+    this->from = pos;
+}
+
+bool Spell::RunPrediction( GameObject* pObject, PredictionOutput & output ) const
+{
+    if ( !pObject ) return false;
+
+    const PredictionInput input
+    {
+        .m_pSource = nullptr,
+        .m_vecSourcePosition = this->from,
+        .m_bHitBox = this->hitbox,
+        .m_flRange = this->range,
+        .m_flDelay = this->delay,
+        .m_flRadius = this->radius,
+        .m_flSpeed = this->speed,
+        .m_iFlags = this->collision,
+    };
+    
+    return g_pExportedPrediction->GetPrediction(pObject, input, output);
+}
+
+PredictionOutput Spell::RunPrediction( GameObject* pObject ) const
+{
+    PredictionOutput output;
+    if ( !pObject ) return output;
+    
+    PredictionInput input
+    {
+        .m_pSource = pObject,
+        .m_vecSourcePosition = pObject->Position(  ),
+        .m_bHitBox = this->hitbox,
+        .m_flRange = this->range,
+        .m_flDelay = this->delay,
+        .m_flRadius = this->radius,
+        .m_flSpeed = this->speed,
+        .m_iFlags = this->collision,
+    };
+
+    if (g_pExportedPrediction->GetPrediction(pObject, input, output))
+    {
+        return output;
+    }
+    
+    return {};
 }

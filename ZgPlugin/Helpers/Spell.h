@@ -4,21 +4,33 @@ class Spell
 {
 public:
     Spell( SpellSlot slot, float range );
-    bool IsReady( float time = 0 ) const;
-
-    void Cast( );
-    void Cast( GameObject* target );
-    void Cast( Vector3 position );
     
-    float Range( ) const;
-    SpellSlot Slot() const;
-    float LastCastTime( ) const;
+    auto SetSkillShot( float delay, float speed, float radius, bool hitbox, PredictionCollisionFlags collision ) -> void;
+    auto IsReady( float time = 0 ) const -> bool;
 
-    void* operator new( size_t size ) { return Globals::Malloc( size ); }
-    void operator delete( void* p ) noexcept { Globals::Free( p ); }
+    auto Cast( ) -> void;
+    auto Cast( GameObject* target ) -> void;
+    auto Cast( Vector3 position ) -> void;
+    auto SetFrom( Vector3 pos ) -> void;
+
+    auto RunPrediction( GameObject* pObject, PredictionOutput& output ) const -> bool;
+    auto RunPrediction( GameObject* pObject ) const -> PredictionOutput;
+
+    auto Range( ) const -> float;
+    auto Slot( ) const -> SpellSlot;
+    auto LastCastTime( ) const -> float;
+
+    auto operator new( size_t size ) -> void* { return Globals::Malloc( size ); }
+    auto operator delete( void* p ) noexcept -> void { Globals::Free( p ); }
 
 protected:
     SpellSlot slot;
     float range;
     float time;
+    bool hitbox;
+    float delay;
+    float radius;
+    float speed;
+    Vector3 from;
+    PredictionCollisionFlags collision;
 };
