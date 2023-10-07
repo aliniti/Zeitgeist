@@ -4,7 +4,6 @@ namespace Katarina
 {
     void OnBoot()
     {
-        // - root menu
         Menu::Root = g_pExportedMenu->AddMenu("EzSeries", MenuConfig("EzSeries"));
         Menu::Root->AddSeparator( MenuString( "Katarina" ) );
 
@@ -57,15 +56,8 @@ namespace Katarina
         Vector<CompileTimeString<char, 64>> spell_priority;
         spell_priority.push_back( MenuString( "E -> Q" ) );
         spell_priority.push_back( MenuString( "Q -> E" ) );
-        //Menu::Style = Menu::Root->AddDropdown( MenuString( "Combo Priority" ), MenuConfig( "katarina.combo.mode" ), spell_priority, 1 );
         Menu::Toggle = Menu::Root->AddKeybind( MenuString( "Combo Priority" ), MenuConfig( "katarina.toggle" ), 'X', true );
         Menu::DrawHPBar = Menu::Root->AddCheckbox( MenuString( "HPBarFill Draw" ), MenuConfig( "katarina.r.draw.hp" ), true );
-
-        
-        
-        //Menu::UseItems->SetTooltipName( TooltipString( "Soon" ) );
-        //Menu::UseIgnite->SetTooltipName( TooltipString( "Soon" ) );
-        
         Menu::Root->AddSeparator( MenuString( "EzSeries v0.47" ) );
 
         if (GetPlayer(  )->Spellbook(  )->GetSpell( Summoner1 )->SpellData(  )->Hash(  ) == FNV1A32CI("SummonerDot"))
@@ -80,16 +72,13 @@ namespace Katarina
         KatarinaR = new Spell( R, 550 );
 
         Cursor = g_pExportedHudManager->CursorPositionUnclipped( );
-        //Globals::Write( "Katarina Loaded!\n" );
     }
 
     void OnTerminate( )
     {
         Menu::Root->Release(  );
     }
-
-    void OnGainBuff( GameObject* pObject, BuffInstance* pInstance ) { }
-
+    
     void OnDraw( )
     {
         if (GetPlayer(  )->IsDead(  ))

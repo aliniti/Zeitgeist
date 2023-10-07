@@ -11,7 +11,6 @@ namespace Katarina
     
     void OnBoot( );
     void OnTerminate( );
-    void OnGainBuff( GameObject* pObject, BuffInstance* pInstance );
     void OnDraw( );
     void OnPresentDraw( );
     void OnCreateObject( GameObject* pObject );
