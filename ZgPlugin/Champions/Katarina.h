@@ -30,14 +30,14 @@ namespace Katarina
     void UseR( );
     void UseIgnite( );
     void UseProtoBelt( float range );
+    void Flee();
     
     float UltDmg( GameObject* pObject, float time );
     float GroundDaggerDmg( GameObject* pObject, bool draw = false );
     float ShunpoDmg( GameObject* pObject );
     float DaggerDmg( GameObject* pObject );
     float IgniteDmg( );
-
-
+    
     [[clang::no_destroy]] inline Vector<Dagger> Daggers;
     [[clang::no_destroy]] inline Vector<GameObject*> ShunpoObjects;
 

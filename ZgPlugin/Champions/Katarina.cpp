@@ -11,7 +11,7 @@ namespace Katarina
         Menu::UseQ = q_menu->AddCheckbox( MenuString( "Use Bouncing Blade (Q)" ), MenuConfig( "katarina.use.q" ), true );
         Menu::LastHitQ = q_menu->AddCheckbox( MenuString( "- Last Hit" ), MenuConfig( "katarina.last.hit.q" ), true );
         Menu::DaggerCalc = q_menu->AddSlider( MenuString( "- Daggers (Dmg Calc)" ), MenuConfig( "katarina.q.daggers" ), 0, 3, 2, 0, 1 );
-        Menu::DaggerCalc->SetTooltipName( TooltipString( "Calculates as if x daggers near target." ) );
+        Menu::DaggerCalc->SetTooltipName( TooltipString( "Calculates as if # daggers near target." ) );
         Menu::DrawDagger = q_menu->AddCheckbox( MenuString( "- Draw Dagger Lifetime" ), MenuConfig( "katarina.dagger.life" ), true );
         Menu::DrawQ = q_menu->AddCheckbox( MenuString( "- Draw Range" ), MenuConfig( "katarina.q.draw" ), true );
 
@@ -42,7 +42,7 @@ namespace Katarina
         ult_mode_items.push_back( MenuString( "Killable" ) );
         Menu::UltMode = r_menu->AddDropdown( MenuString( "- Use When:" ), MenuConfig( "katarina.r.when" ), ult_mode_items, 0 );
 
-        Menu::AutoR = r_menu->AddSlider( MenuString( "- Auto use if x in Range" ), MenuConfig( "katarina.auto.r" ), 1, 6, 3, 0, 1 );
+        Menu::AutoR = r_menu->AddSlider( MenuString( "- Auto use if # in Range" ), MenuConfig( "katarina.auto.r" ), 1, 6, 3, 0, 1 );
         Menu::Channel = r_menu->AddSlider( MenuString( "- Channel Time (Dmg Calc)" ), MenuConfig( "katarina.r.channel" ), 0.0, 2.5, 2.0, 1, .1 );
         Menu::Cancel = r_menu->AddCheckbox( MenuString( "- Cancel if None in Range" ), MenuConfig( "katarina.use.r.cancel" ), true );
         Menu::DrawR = r_menu->AddCheckbox( MenuString( "- Draw Range" ), MenuConfig( "katarina.r.draw" ), true );
@@ -50,8 +50,8 @@ namespace Katarina
         Menu::Root->AddSeparator( MenuString( "Mechanics" ) );
         Menu::UseIgnite = Menu::Root->AddCheckbox( MenuString( "Use Ignite" ), MenuConfig( "katarina.use.ignite" ), true );
         Menu::UseItems = Menu::Root->AddCheckbox( MenuString( "Use Rocketbelt" ), MenuConfig( "katarina.use.items" ), true );
-        Menu::Killsteal = Menu::Root->AddCheckbox( MenuString( "Killsteal" ), MenuConfig( "katarina.ks" ), false );
-        Menu::Killsteal->SetTooltipName( TooltipString( "Soon" ) );
+        //Menu::Killsteal = Menu::Root->AddCheckbox( MenuString( "Killsteal" ), MenuConfig( "katarina.ks" ), false );
+        //Menu::Killsteal->SetTooltipName( TooltipString( "Soon" ) );
         
         Vector<CompileTimeString<char, 64>> spell_priority;
         spell_priority.push_back( MenuString( "E -> Q" ) );
@@ -171,7 +171,7 @@ namespace Katarina
 
     Vector3 ShunpoPosition( GameObject* pObject )
     {
-        if ( pObject == nullptr || !Utils::IsValidTarget( pObject ) )
+        if ( pObject == nullptr )
         {
             return { };
         }
@@ -327,6 +327,8 @@ namespace Katarina
             {
                 KatarinaW->Cast( );
             }
+
+            Flee(  );
         }
         
         OnPostUpdate( );
@@ -529,6 +531,39 @@ namespace Katarina
                 {
                     auto pos = target->Position(  );
                     GetPlayer(  )->Spellbook(  )->SendSpellCastPacket( pSlot, &pos, &pos, nullptr);
+                }
+            }
+        }
+    }
+
+    void Flee( )
+    {
+        if ( !Menu::FleeE->Enabled(  ) || !KatarinaE->IsReady(  ) )
+            return;
+        
+        auto jump_list = Vector<GameObject*>();
+        jump_list.clear(  );
+
+        for ( auto i : g_pExportedEntityManager->Heroes(  ) )
+            jump_list.push_back( i );
+
+        for ( auto i : g_pExportedEntityManager->Minions(  ) )
+            jump_list.push_back( i );
+
+        jump_list.sort( [&]( GameObject* a, GameObject* b )
+            { return a->DistanceXZ( *Cursor ) < b->DistanceXZ( *Cursor );  } );
+
+        for ( auto t : jump_list )
+        {
+            auto pos = ShunpoPosition( t );
+            if ( pos.IsValid(  ) && GetPlayer(  )->DistanceXZ( pos ) > KatarinaW->Range(  ))
+            {
+                if ( GetPlayer( )->DistanceXZ( pos ) <= KatarinaE->Range( ) )
+                {
+                    if ( Cursor->DistanceXZ( pos ) <= KatarinaW->Range( ) )
+                    {
+                        KatarinaE->Cast( pos );
+                    }
                 }
             }
         }
