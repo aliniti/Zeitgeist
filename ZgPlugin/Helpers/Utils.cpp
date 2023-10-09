@@ -3,6 +3,11 @@
 
 namespace Utils
 {
+    auto Get( uint16_t handle ) -> GameObject*
+    {
+        return g_pExportedObjectManager->GetObjectByHandle( handle );
+    }
+
     auto IsValidTarget( GameObject* pObject, float range ) -> bool
     {
         if ( pObject == nullptr || !pObject->IsAttackable( true, false ) )
@@ -11,6 +16,20 @@ namespace Utils
         }
 
         return GetPlayer( )->DistanceXZ( pObject ) <= range;
+    }
+
+    auto IsOnSegment(Vector3 pos, Vector3 start, Vector3 end, float radius ) -> bool
+    {
+        Vector3 segment;
+        if (g_pExportedMath->IsOnSegment( pos, start, end, segment ))
+        {
+            if (pos.DistanceXZ( segment ) <= radius)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     auto UnderEnemyTurret( ) -> bool
