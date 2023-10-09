@@ -2,8 +2,6 @@
 
 namespace Camille
 {
-
-    
     void OnBoot( )
     {
         Menu::Root = g_pExportedMenu->AddMenu( "EzSeries", MenuConfig( "EzSeries" ) );
@@ -104,17 +102,17 @@ namespace Camille
         }
 
         // - harass
-        if ( g_pExportedOrbwalker->GetMode( OrbwalkerMode::Harass )->Enabled(  ) )
-        {
-            auto w_tar = g_pExportedTargetSelector->GetTarget( CamW->Range( ), true );
-            if ( w_tar != nullptr )
-            {
-                if ( GetPlayer( )->PAR( ) / GetPlayer( )->PAR( ) * 100 > Menu::HarassWPct->Value( ) )
-                {
-                    UseW( w_tar );
-                }
-            }
-        }
+        // if ( g_pExportedOrbwalker->GetMode( OrbwalkerMode::Harass )->Enabled(  ) )
+        // {
+        //     auto w_tar = g_pExportedTargetSelector->GetTarget( CamW->Range( ), true );
+        //     if ( w_tar != nullptr )
+        //     {
+        //         if ( GetPlayer( )->PAR( ) / GetPlayer( )->PAR( ) * 100 > Menu::HarassWPct->Value( ) )
+        //         {
+        //             UseW( w_tar );
+        //         }
+        //     }
+        // }
     }
 
     void OnPresentDraw( )

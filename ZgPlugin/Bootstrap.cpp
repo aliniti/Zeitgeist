@@ -81,8 +81,10 @@ void OnBootPlugin( )
     {
         case SDBM32CI( "Katarina" ):
             Katarina::OnBoot( );
+            break;
         case SDBM32CI( "Camille" ):
             Camille::OnBoot( );
+            break;
         default: ;
     }
 }
