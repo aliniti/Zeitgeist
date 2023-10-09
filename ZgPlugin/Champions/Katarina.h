@@ -13,7 +13,6 @@ namespace Katarina
     void OnTerminate( );
     void OnDraw( );
     void OnPresentDraw( );
-    void OnCreateObject( GameObject* pObject );
     void OnCreateParticle( GameObject* pObject, std::uint32_t iHash );
     Vector3 ShunpoPosition( GameObject* pObject );
     void OnPreUpdate( );

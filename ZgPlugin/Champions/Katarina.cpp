@@ -58,7 +58,7 @@ namespace Katarina
         spell_priority.push_back( MenuString( "Q -> E" ) );
         Menu::Toggle = Menu::Root->AddKeybind( MenuString( "Combo Priority" ), MenuConfig( "katarina.toggle" ), 'X', true );
         Menu::DrawHPBar = Menu::Root->AddCheckbox( MenuString( "HPBarFill Draw" ), MenuConfig( "katarina.r.draw.hp" ), true );
-        Menu::Root->AddSeparator( MenuString( "EzSeries v0.47" ) );
+        Menu::Root->AddSeparator( MenuString( "EzSeries v0.49" ) );
 
         if (GetPlayer(  )->Spellbook(  )->GetSpell( Summoner1 )->SpellData(  )->Hash(  ) == FNV1A32CI("SummonerDot"))
             Ignite = new Spell ( Summoner1, 600);
@@ -158,19 +158,15 @@ namespace Katarina
         }
     }
 
-    void OnCreateObject( GameObject* pObject ) { }
-
     void OnCreateParticle( GameObject* pObject, std::uint32_t iHash )
     {
         if ( pObject != nullptr )
+        {
             if ( iHash == FNV1A32CI( "Katarina_Dagger_Ground_Indicator" ) )
             {
-                Daggers.push_back( {
-                    .Obj = pObject,
-                    .Position = pObject->Position( ),
-                    .CreateTime = g_pExportedGlobalClocks->GameTime( ),
-                } );
+                Daggers.push_back( {.Obj = pObject, .Position = pObject->Position( ), .CreateTime = g_pExportedGlobalClocks->GameTime( ), } );
             }
+        }
     }
 
     Vector3 ShunpoPosition( GameObject* pObject )
@@ -608,7 +604,7 @@ namespace Katarina
 
     float IgniteDmg()
     {
-        if ( !Ignite->IsReady(  ) )
+        if ( !Ignite->IsReady(  ) || !Menu::UseIgnite->Enabled(  ))
             return 0;
         
         // constants
@@ -616,11 +612,8 @@ namespace Katarina
         constexpr double base_value_min = 70.0;
         constexpr double base_value_max = 410.0;
 
-        // Calculate the value based on the level
-        double value = base_value_min + ((base_value_max - base_value_min) / 17.0) * (lvl - 1);
-
-
-        return value;
+        // calculate the value based on the level
+        return base_value_min + ((base_value_max - base_value_min) / 17.0) * (lvl - 1);
     }
 
     float GroundDaggerDmg( GameObject* pObject, bool draw )
