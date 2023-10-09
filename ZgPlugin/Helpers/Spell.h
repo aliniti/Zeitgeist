@@ -17,8 +17,10 @@ public:
     auto RunPrediction( GameObject* pObject ) const -> PredictionOutput;
 
     auto Range( ) const -> float;
+    auto Level( ) const -> int;
     auto Slot( ) const -> SpellSlot;
     auto LastCastTime( ) const -> float;
+    uint32_t Hash() const;
 
     auto operator new( size_t size ) -> void* { return Globals::Malloc( size ); }
     auto operator delete( void* p ) noexcept -> void { Globals::Free( p ); }

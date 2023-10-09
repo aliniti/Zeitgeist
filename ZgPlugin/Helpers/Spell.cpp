@@ -22,6 +22,11 @@ float Spell::Range( ) const
     return this->range;
 }
 
+auto Spell::Level( ) const -> int
+{
+    return GetPlayer(  )->Spellbook(  )->GetSpell( this->slot )->Level(  );
+}
+
 SpellSlot Spell::Slot( ) const
 {
     return this->slot;
@@ -30,6 +35,11 @@ SpellSlot Spell::Slot( ) const
 float Spell::LastCastTime( ) const
 {
     return this->time;
+}
+
+uint32_t Spell::Hash( ) const
+{
+    return GetPlayer(  )->Spellbook(  )->GetSpell( this->slot )->SpellData(  )->Hash(  );
 }
 
 bool Spell::IsReady( const float time ) const
