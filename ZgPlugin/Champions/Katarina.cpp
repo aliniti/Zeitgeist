@@ -506,7 +506,7 @@ namespace Katarina
 
     void UseIgnite( )
     {
-        if ( Ignite->IsReady(  ) && Menu::UseIgnite->Enabled(  ))
+        if ( Ignite != nullptr && Ignite->IsReady(  ) && Menu::UseIgnite->Enabled(  ))
         {
             auto target = g_pExportedTargetSelector->GetTarget( KatarinaR->Range( ), true );
             if ( target != nullptr && Utils::IsValidTarget( target ) )
@@ -639,16 +639,17 @@ namespace Katarina
 
     float IgniteDmg()
     {
-        if ( !Ignite->IsReady(  ) || !Menu::UseIgnite->Enabled(  ))
-            return 0;
-        
-        // constants
-        const auto lvl = GetPlayer( )->Experience( )->Level( );
-        constexpr double base_value_min = 70.0;
-        constexpr double base_value_max = 410.0;
+        if ( Ignite != nullptr && Ignite->IsReady(  ) && Menu::UseIgnite->Enabled(  ))
+        {
+            // constants
+            const auto lvl = GetPlayer( )->Experience( )->Level( );
+            constexpr double base_value_min = 70.0;
+            constexpr double base_value_max = 410.0;
 
-        // calculate the value based on the level
-        return base_value_min + ((base_value_max - base_value_min) / 17.0) * (lvl - 1);
+            // calculate the value based on the level
+            return base_value_min + ( ( base_value_max - base_value_min ) / 17.0 ) * ( lvl - 1 );
+        }
+        return 0;
     }
 
     float GroundDaggerDmg( GameObject* pObject, bool draw )

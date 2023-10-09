@@ -80,11 +80,9 @@ void OnBootPlugin( )
     switch ( GetPlayer( )->CharacterData( )->SkinHash( ) )
     {
         case SDBM32CI( "Katarina" ):
-            Katarina::OnBoot( );
-            break;
+            return Katarina::OnBoot( );
         case SDBM32CI( "Camille" ):
-            Camille::OnBoot( );
-            break;
+            return Camille::OnBoot( );
         default: ;
     }
 }
@@ -94,12 +92,10 @@ void OnTerminatePlugin( )
     switch ( GetPlayer( )->CharacterData( )->SkinHash( ) )
     {
         case SDBM32CI( "Katarina" ):
-            Katarina::OnTerminate( );
-            break;
+            return Katarina::OnTerminate( );
 
         case SDBM32CI( "Camille" ):
-            Camille::OnTerminate( );
-            break;
+            return Camille::OnTerminate( );
         default: ;
     }
 }
