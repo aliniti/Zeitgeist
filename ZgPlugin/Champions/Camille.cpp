@@ -37,7 +37,7 @@ namespace Camille
         Menu::Root->AddSeparator( MenuString( "Mechanics" ) );
         Menu::UseIgnite = Menu::Root->AddCheckbox( MenuString( "Use Ignite" ), MenuConfig( "camille.use.ignite" ), true );
         Menu::DrawDamageBar = Menu::Root->AddCheckbox( MenuString( "HPBarFill Draw" ), MenuConfig( "camille.r.draw.hp" ), true );
-        Menu::Root->AddSeparator( MenuString( "EzSeries v0.49" ) );
+        Menu::Root->AddSeparator( MenuString( "EzSeries v0.51" ) );
         
         if ( GetPlayer( )->Spellbook( )->GetSpell( Summoner1 )->SpellData( )->Hash( ) == FNV1A32CI( "SummonerDot" ) )
             Ignite = new Spell( Summoner1, 600 );

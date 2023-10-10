@@ -58,7 +58,7 @@ namespace Katarina
         spell_priority.push_back( MenuString( "Q -> E" ) );
         Menu::Toggle = Menu::Root->AddKeybind( MenuString( "Combo Priority" ), MenuConfig( "katarina.toggle" ), 'X', true );
         Menu::DrawHPBar = Menu::Root->AddCheckbox( MenuString( "HPBarFill Draw" ), MenuConfig( "katarina.r.draw.hp" ), true );
-        Menu::Root->AddSeparator( MenuString( "EzSeries v0.49" ) );
+        Menu::Root->AddSeparator( MenuString( "EzSeries v0.51" ) );
 
         if (GetPlayer(  )->Spellbook(  )->GetSpell( Summoner1 )->SpellData(  )->Hash(  ) == FNV1A32CI("SummonerDot"))
             Ignite = new Spell ( Summoner1, 600);
@@ -66,10 +66,10 @@ namespace Katarina
         if (GetPlayer(  )->Spellbook(  )->GetSpell( Summoner2 )->SpellData(  )->Hash(  ) == FNV1A32CI("SummonerDot"))
             Ignite = new Spell ( Summoner2, 600);
 
-        KatarinaQ = new Spell( Q, 625 );
-        KatarinaW = new Spell( W, 325 );
-        KatarinaE = new Spell( E, 725 );
-        KatarinaR = new Spell( R, 550 );
+        KatQ = new Spell( Q, 625 );
+        KatW = new Spell( W, 325 );
+        KatE = new Spell( E, 725 );
+        KatR = new Spell( R, 550 );
 
         Cursor = g_pExportedHudManager->CursorPositionUnclipped( );
     }
@@ -87,22 +87,22 @@ namespace Katarina
         const auto q_opacity = GetPlayer(  )->Spellbook(  )->CanUseSpell( Q ) ? 255 : 25;
         if ( Menu::DrawQ->Enabled( ) && GetPlayer(  )->Spellbook(  )->GetSpell( Q )->Level(  ) > 0 )
         {
-            g_pExportedRenderer->GetCurrentDrawList( )->AddCircle( GetPlayer( )->Position( ), KatarinaQ->Range( ), 6, RGBA( 0, 0, 0, q_opacity ) );
-            g_pExportedRenderer->GetCurrentDrawList( )->AddCircle( GetPlayer( )->Position( ), KatarinaQ->Range( ), 3, RGBA( 255, 51, 204, q_opacity ) );
+            g_pExportedRenderer->GetCurrentDrawList( )->AddCircle( GetPlayer( )->Position( ), KatQ->Range( ), 6, RGBA( 0, 0, 0, q_opacity ) );
+            g_pExportedRenderer->GetCurrentDrawList( )->AddCircle( GetPlayer( )->Position( ), KatQ->Range( ), 3, RGBA( 255, 51, 204, q_opacity ) );
         }
 
         const auto e_opacity = GetPlayer(  )->Spellbook(  )->CanUseSpell( E ) ? 255 : 25;
         if ( Menu::DrawE->Enabled( ) && GetPlayer(  )->Spellbook(  )->GetSpell( E )->Level(  ) > 0 )
         {
-            g_pExportedRenderer->GetCurrentDrawList( )->AddCircle( GetPlayer( )->Position( ), KatarinaE->Range( ), 6, RGBA( 0, 0, 0, e_opacity ) );
-            g_pExportedRenderer->GetCurrentDrawList( )->AddCircle( GetPlayer( )->Position( ), KatarinaE->Range( ), 3, RGBA( 255, 51, 204, e_opacity ) );
+            g_pExportedRenderer->GetCurrentDrawList( )->AddCircle( GetPlayer( )->Position( ), KatE->Range( ), 6, RGBA( 0, 0, 0, e_opacity ) );
+            g_pExportedRenderer->GetCurrentDrawList( )->AddCircle( GetPlayer( )->Position( ), KatE->Range( ), 3, RGBA( 255, 51, 204, e_opacity ) );
         }
 
         const auto r_opacity = GetPlayer(  )->Spellbook(  )->CanUseSpell( R ) ? 255 : 25;
         if ( Menu::DrawR->Enabled( ) && GetPlayer(  )->Spellbook(  )->GetSpell( R )->Level(  ) > 0 )
         {
-            g_pExportedRenderer->GetCurrentDrawList( )->AddCircle( GetPlayer( )->Position( ), KatarinaR->Range( ), 6, RGBA( 0, 0, 0, r_opacity ) );
-            g_pExportedRenderer->GetCurrentDrawList( )->AddCircle( GetPlayer( )->Position( ), KatarinaR->Range( ), 3, RGBA( 255, 255, 255, r_opacity ) );
+            g_pExportedRenderer->GetCurrentDrawList( )->AddCircle( GetPlayer( )->Position( ), KatR->Range( ), 6, RGBA( 0, 0, 0, r_opacity ) );
+            g_pExportedRenderer->GetCurrentDrawList( )->AddCircle( GetPlayer( )->Position( ), KatR->Range( ), 3, RGBA( 255, 255, 255, r_opacity ) );
         }
         
         for ( auto i : Daggers )
@@ -116,10 +116,10 @@ namespace Katarina
                 char Buffer[64];
                 Globals::Sprintf( Buffer, "%2.f", time_left );
 
-                g_pExportedRenderer->GetCurrentDrawList( )->AddCircle( i.Position, KatarinaW->Range( ), 4, RGBA( 0, 0, 0, 255 ) );
-                g_pExportedRenderer->GetCurrentDrawList( )->AddCircle( i.Position, KatarinaW->Range( ), 2, RGBA( 255, 51, 204, 255 ) );
-                g_pExportedRenderer->GetCurrentDrawList( )->AddCircle( i.Position, KatarinaW->Range( ) / 2 + 2, 2, RGBA( 0, 0, 0, 255 ) );
-                g_pExportedRenderer->GetCurrentDrawList( )->AddCircle( i.Position, KatarinaW->Range( ) / 2, 2, RGBA( 255, 51, 204, 255 ) );
+                g_pExportedRenderer->GetCurrentDrawList( )->AddCircle( i.Position, KatW->Range( ), 4, RGBA( 0, 0, 0, 255 ) );
+                g_pExportedRenderer->GetCurrentDrawList( )->AddCircle( i.Position, KatW->Range( ), 2, RGBA( 255, 51, 204, 255 ) );
+                g_pExportedRenderer->GetCurrentDrawList( )->AddCircle( i.Position, KatW->Range( ) / 2 + 2, 2, RGBA( 0, 0, 0, 255 ) );
+                g_pExportedRenderer->GetCurrentDrawList( )->AddCircle( i.Position, KatW->Range( ) / 2, 2, RGBA( 255, 51, 204, 255 ) );
                 g_pExportedRenderer->GetCurrentDrawList( )->AddTextA( nullptr, Buffer, 75, wts.x + 1, wts.y + 1, RGBA( 0, 0, 0, 255 ) );
                 g_pExportedRenderer->GetCurrentDrawList( )->AddTextA( nullptr, Buffer, 75, wts.x, wts.y, RGBA( 255, 51, 204, 255 ) );
             }
@@ -164,7 +164,9 @@ namespace Katarina
         {
             if ( iHash == FNV1A32CI( "Katarina_Dagger_Ground_Indicator" ) )
             {
-                Daggers.push_back( {.Obj = pObject, .Position = pObject->Position( ), .CreateTime = g_pExportedGlobalClocks->GameTime( ), } );
+                Daggers.push_back( {.
+                    Obj = pObject, .Position = pObject->Position( ), .
+                    CreateTime = g_pExportedGlobalClocks->GameTime( ), } );
             }
         }
     }
@@ -180,11 +182,11 @@ namespace Katarina
         {
             auto blade = d.Obj;
 
-            if ( pObject->Position( ).DistanceXZ( blade->Position( ) ) <= KatarinaW->Range( ) + pObject->BoundingRadius( ) )
+            if ( pObject->DistanceXZ( blade ) <= KatW->Range( ) + pObject->BoundingRadius( ) )
             {
-                if ( blade->Position( ).DistanceXZ( GetPlayer( )->Position( ) ) <= KatarinaE->Range( ) + KatarinaW->Range( ) )
+                if ( blade->DistanceXZ( GetPlayer( ) ) <= KatE->Range( ) + KatW->Range( ) )
                 {
-                    if ( blade->DistanceXZ( GetPlayer( )->Position( ) ) > KatarinaW->Range( ) - 115 || CanPostExecute( pObject ) )
+                    if ( CanPostExecute( pObject ) || blade->DistanceXZ( GetPlayer( ) ) > KatW->Range( ) - 115 )
                     {
                         return blade->Position( );
                     }
@@ -217,7 +219,7 @@ namespace Katarina
     {
         if ( Spinning(  ) && Menu::UseR->Enabled(  ))
         {
-            auto target = g_pExportedTargetSelector->GetTarget( KatarinaE->Range(  ), true );
+            auto target = g_pExportedTargetSelector->GetTarget( KatE->Range(  ), true );
             if ( target != nullptr && CanPostExecute( target ) && Utils::IsValidTarget( target ))
             {
                 if (g_pExportedOrbwalker->GetMode( OrbwalkerMode::Combo )->Enabled(  ))
@@ -225,11 +227,11 @@ namespace Katarina
                     if (Menu::Toggle->Enabled(  ))
                     {
                         UseQ( );
-                        UseE( KatarinaQ->Range(  ) - 115);
+                        UseE( KatQ->Range(  ) - 115);
                     }
                     else
                     {
-                        UseE( KatarinaE->Range(  ) );
+                        UseE( KatE->Range(  ) );
                         UseQ( );
                     }
                 }
@@ -254,16 +256,16 @@ namespace Katarina
         
         if ( Utils::CountEnemiesInRange( GetPlayer(  ), 550) >= Menu::AutoR->Value(  ) )
         {
-            if ( Menu::UseR->Enabled(  ) &&  KatarinaR->IsReady(  ) )
+            if ( Menu::UseR->Enabled(  ) &&  KatR->IsReady(  ) )
             {
-                if ( KatarinaW->IsReady( ) && !Spinning(  ) )
+                if ( KatW->IsReady( ) && !Spinning(  ) )
                 {
-                    KatarinaW->Cast( );
+                    KatW->Cast( );
                 }
 
-                if ( KatarinaR->IsReady(  ) )
+                if ( KatR->IsReady(  ) )
                 {
-                    KatarinaR->Cast( );
+                    KatR->Cast( );
                 }
             }
         }
@@ -275,14 +277,14 @@ namespace Katarina
                 if (Menu::Toggle->Enabled(  ))
                 {
                     UseQ( );
-                    UseE( KatarinaQ->Range(  ) - 115);
+                    UseE( KatQ->Range(  ) - 115 );
                     UseW( );
                     UseR( );
                     UseIgnite(  );
                 }
                 else
                 {
-                    UseE( KatarinaE->Range(  ) );
+                    UseE( KatE->Range(  ) );
                     UseQ( );
                     UseW( );
                     UseR( );
@@ -308,13 +310,13 @@ namespace Katarina
         if ( g_pExportedOrbwalker->GetMode( OrbwalkerMode::LastHit )->Enabled( ) ||
             g_pExportedOrbwalker->GetMode( OrbwalkerMode::LaneClear )->Enabled( ) )
         {
-            if ( Menu::UseQ->Enabled( ) && Menu::LastHitQ->Enabled( ) && KatarinaQ->IsReady( ) )
+            if ( Menu::UseQ->Enabled( ) && Menu::LastHitQ->Enabled( ) && KatQ->IsReady( ) )
             {
                 for ( auto i : g_pExportedEntityManager->Minions( ) )
                 {
-                    if ( Utils::IsValidTarget( i, KatarinaQ->Range(  ) ) && DaggerDmg( i ) >= i->Health( ) )
+                    if ( Utils::IsValidTarget( i, KatQ->Range(  ) ) && DaggerDmg( i ) >= i->Health( ) )
                     {
-                        KatarinaQ->Cast( i );
+                        KatQ->Cast( i );
                     }
                 }
             }
@@ -323,9 +325,9 @@ namespace Katarina
         if (g_pExportedOrbwalker->GetMode( OrbwalkerMode::Flee )->Enabled(  ))
         {
             // - preparation
-            if ( KatarinaW->IsReady( ) && Menu::UseW->Enabled( ) )
+            if ( KatW->IsReady( ) && Menu::UseW->Enabled( ) )
             {
-                KatarinaW->Cast( );
+                KatW->Cast( );
             }
 
             Flee(  );
@@ -350,7 +352,7 @@ namespace Katarina
             }
 
             // - remove blades ive picked up
-            if ( blade->Position( ).DistanceXZ( GetPlayer( )->Position( ) ) <= KatarinaW->Range( ) - 115 )
+            if ( blade->Position( ).DistanceXZ( GetPlayer( )->Position( ) ) <= KatW->Range( ) - 115 )
             {
                 //Globals::Write( "dagger deleted: proximity\n" );
                 Daggers.erase( it );
@@ -369,16 +371,16 @@ namespace Katarina
 
     float DynamicRange( )
     {
-        if ( !KatarinaE->IsReady( ) )
+        if ( !KatE->IsReady( ) )
         {
-            if ( g_pExportedGlobalClocks->GameTime( ) - KatarinaE->LastCastTime( ) < 0.5 )
+            if ( g_pExportedGlobalClocks->GameTime( ) - KatE->LastCastTime( ) < 0.5 )
             {
                 //Globals::Write( "TRUEE\n" );
-                return KatarinaW->Range( );
+                return KatW->Range( );
             }
         }
         
-        return KatarinaQ->Range(  );
+        return KatQ->Range(  );
     }
 
     // - post execute while channeling ult
@@ -389,11 +391,11 @@ namespace Katarina
         for ( auto a : Daggers )
         {
             auto dagger = a.Obj;
-            if ( dagger->DistanceXZ( pObject ) <= KatarinaW->Range( ) + pObject->BoundingRadius( ) )
+            if ( dagger->DistanceXZ( pObject ) <= KatW->Range( ) + pObject->BoundingRadius( ) )
             {
-                if ( KatarinaE->IsReady( ) )
+                if ( KatE->IsReady( ) )
                 {
-                    if ( dagger->DistanceXZ( GetPlayer( ) ) <= KatarinaE->Range( ) + KatarinaW->Range( ) )
+                    if ( dagger->DistanceXZ( GetPlayer( ) ) <= KatE->Range( ) + KatW->Range( ) )
                     {
                         dmg += GroundDaggerDmg( pObject );
                         break;
@@ -401,7 +403,7 @@ namespace Katarina
                 }
                 else
                 {
-                    if ( dagger->DistanceXZ( GetPlayer( ) ) <= KatarinaW->Range( ) - 115 )
+                    if ( dagger->DistanceXZ( GetPlayer( ) ) <= KatW->Range( ) - 115 )
                     {
                         dmg += GroundDaggerDmg( pObject );
                         break;
@@ -430,13 +432,13 @@ namespace Katarina
     void UseQ( )
     {
         // - bounding blades
-        if ( KatarinaQ->IsReady( ) && Menu::UseQ->Enabled( ) )
+        if ( KatQ->IsReady( ) && Menu::UseQ->Enabled( ) )
         {
             UseProtoBelt( DynamicRange(  ) );
             auto target = g_pExportedTargetSelector->GetTarget( DynamicRange(  ), true );
             if ( target != nullptr && Utils::IsValidTarget( target ) )
             {
-                KatarinaQ->Cast( target ) ;
+                KatQ->Cast( target ) ;
             }
         }
     }
@@ -444,14 +446,14 @@ namespace Katarina
     void UseW( )
     {
         // - preparation
-        if ( KatarinaW->IsReady( ) && Menu::UseW->Enabled( ) )
+        if ( KatW->IsReady( ) && Menu::UseW->Enabled( ) )
         {
-            auto target = g_pExportedTargetSelector->GetTarget( KatarinaW->Range( ), true );
+            auto target = g_pExportedTargetSelector->GetTarget( KatW->Range( ), true );
             if ( target != nullptr && Utils::IsValidTarget( target ) )
             {
-                if ( !KatarinaQ->IsReady( ) || !Menu::UseQ->Enabled(  ) )
+                if ( !KatQ->IsReady( ) || !Menu::UseQ->Enabled(  ) )
                 {
-                    KatarinaW->Cast( );
+                    KatW->Cast( );
                 }
             }
         }
@@ -459,11 +461,11 @@ namespace Katarina
 
     void UseE( float range )
     {
-        if ( ! KatarinaQ->IsReady(  ) )
-            range = KatarinaE->Range(  );
+        if ( ! KatQ->IsReady(  ) )
+            range = KatE->Range(  );
         
         // - shunpo target
-        if ( KatarinaE->IsReady( ) && Menu::UseE->Enabled( ) )
+        if ( KatE->IsReady( ) && Menu::UseE->Enabled( ) )
         {
             UseProtoBelt( range );
             auto target = g_pExportedTargetSelector->GetTarget( range, true );
@@ -474,7 +476,7 @@ namespace Katarina
                 {
                     if ( CanPostExecute( target ) || GetPlayer( )->DistanceXZ( pos ) > GetPlayer( )->CharacterIntermediate( )->AttackRange( ) + 125 )
                     {
-                        KatarinaE->Cast( pos );
+                        KatE->Cast( pos );
                     }
                 }
             }
@@ -484,20 +486,20 @@ namespace Katarina
     void UseR( )
     {
         // - death lotus
-        if ( KatarinaR->IsReady( ) && Menu::UseR->Enabled( ) )
+        if ( KatR->IsReady( ) && Menu::UseR->Enabled( ) )
         {
-            auto target = g_pExportedTargetSelector->GetTarget( KatarinaR->Range( ), true );
+            auto target = g_pExportedTargetSelector->GetTarget( KatR->Range( ), true );
             if ( target != nullptr && Utils::IsValidTarget( target ) )
             {
                 if ( Menu::UltMode->SelectedItem( ) == 0 || Menu::UltMode->SelectedItem( ) == 1 && CanPreExecute( target ) )
                 {
-                    if (KatarinaW->IsReady(  ))
+                    if (KatW->IsReady(  ))
                     {
-                        KatarinaW->Cast();
+                        KatW->Cast();
                     }
                     else
                     {
-                        KatarinaR->Cast( );
+                        KatR->Cast( );
                     }
                 }
             }
@@ -508,7 +510,7 @@ namespace Katarina
     {
         if ( Ignite != nullptr && Ignite->IsReady(  ) && Menu::UseIgnite->Enabled(  ))
         {
-            auto target = g_pExportedTargetSelector->GetTarget( KatarinaR->Range( ), true );
+            auto target = g_pExportedTargetSelector->GetTarget( KatR->Range( ), true );
             if ( target != nullptr && Utils::IsValidTarget( target ) )
             {
                 if ( CanPreExecute( target ) )
@@ -538,7 +540,7 @@ namespace Katarina
 
     void Flee( )
     {
-        if ( !Menu::FleeE->Enabled(  ) || !KatarinaE->IsReady(  ) )
+        if ( !Menu::FleeE->Enabled(  ) || !KatE->IsReady(  ) )
             return;
         
         auto jump_list = Vector<GameObject*>();
@@ -556,13 +558,13 @@ namespace Katarina
         for ( auto t : jump_list )
         {
             auto pos = ShunpoPosition( t );
-            if ( pos.IsValid(  ) && GetPlayer(  )->DistanceXZ( pos ) > KatarinaW->Range(  ))
+            if ( pos.IsValid(  ) && GetPlayer(  )->DistanceXZ( pos ) > KatW->Range(  ))
             {
-                if ( GetPlayer( )->DistanceXZ( pos ) <= KatarinaE->Range( ) )
+                if ( GetPlayer( )->DistanceXZ( pos ) <= KatE->Range( ) )
                 {
-                    if ( Cursor->DistanceXZ( pos ) <= KatarinaW->Range( ) )
+                    if ( Cursor->DistanceXZ( pos ) <= KatW->Range( ) )
                     {
-                        KatarinaE->Cast( pos );
+                        KatE->Cast( pos );
                     }
                 }
             }
@@ -574,7 +576,7 @@ namespace Katarina
         auto p_dmg = 0;
         auto m_dmg = 0;
 
-        if ( !KatarinaR->IsReady( ) )
+        if ( !KatR->IsReady( ) )
             return p_dmg + m_dmg;
 
         // constants for base damage, bonus AD scaling, AP scaling, and on-attack/on-hit effectiveness
@@ -623,7 +625,7 @@ namespace Katarina
 
     float DaggerDmg( GameObject* pObject )
     {
-        if ( !KatarinaQ->IsReady( ) )
+        if ( !KatQ->IsReady( ) )
             return 0;
 
         // constants for base damage and AP scaling
@@ -676,7 +678,7 @@ namespace Katarina
 
     float ShunpoDmg( GameObject* pObject )
     {
-        if ( !KatarinaE->IsReady( ) )
+        if ( !KatE->IsReady( ) )
             return 0;
 
         // constants for base damage, AD scaling, and AP scaling

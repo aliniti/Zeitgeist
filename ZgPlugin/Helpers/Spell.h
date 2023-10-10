@@ -6,7 +6,7 @@ public:
     Spell( SpellSlot slot, float range );
     
     auto SetSkillShot( float delay, float speed, float radius, bool hitbox, PredictionCollisionFlags collision ) -> void;
-    auto IsReady( float time = 0 ) const -> bool;
+    auto IsReady( float t = 0 ) const -> bool;
 
     auto Cast( ) -> void;
     auto Cast( GameObject* target ) -> void;

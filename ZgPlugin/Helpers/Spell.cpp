@@ -42,7 +42,7 @@ uint32_t Spell::Hash( ) const
     return GetPlayer(  )->Spellbook(  )->GetSpell( this->slot )->SpellData(  )->Hash(  );
 }
 
-bool Spell::IsReady( const float time ) const
+bool Spell::IsReady( const float t ) const
 {
     const auto spellbook = GetPlayer( )->Spellbook( );
     if ( !spellbook ) return false;
@@ -50,7 +50,7 @@ bool Spell::IsReady( const float time ) const
     const auto spell = spellbook->GetSpell( this->slot );
     if ( !spell || spell->Level( ) <= 0 ) return false;
 
-    if ( spell->GetRemainingCooldown( ) > 0 && spell->GetRemainingCooldown( ) <= time ) return true;
+    if ( spell->GetRemainingCooldown( ) > 0 && spell->GetRemainingCooldown( ) <= t ) return true;
     return spellbook->CanUseSpell( this->slot );
 }
 

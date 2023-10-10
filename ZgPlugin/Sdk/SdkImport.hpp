@@ -20,7 +20,7 @@
 #error Unsupported Architecture
 #endif
 
-extern "C" inline __declspec(dllexport) std::uint32_t g_iSdkVersion = 4;
+extern "C" inline __declspec(dllexport) std::uint32_t g_iSdkVersion = 5;
 
 namespace Zeitgeist::SdkImport {
 	namespace Globals {
@@ -113,17 +113,17 @@ namespace Zeitgeist::SdkImport {
 		Turret = FNV1A32CI("Turret"),
 	};
 
-	enum struct CombatType : std::uint32_t {
+	enum struct CombatType : std::int32_t {
 		Melee = 1,
 		Ranged = 2
 	};
 
-	enum struct DampenerState : std::uint32_t {
+	enum struct DampenerState : std::int32_t {
 		Dead = 0,
 		Alive = 1
 	};
 
-	enum struct ItemID : std::uint32_t {
+	enum struct ItemID : std::int32_t {
 		ArcaneSweeper = 3187,
 		ArcaneSweeperAlt = 3348,
 		Ohmwrecker = 3056,
@@ -852,7 +852,7 @@ namespace Zeitgeist::SdkImport {
 		Toggle = 4
 	};
 
-	enum GameMap : std::uint32_t {
+	enum GameMap : std::int32_t {
 		SummonersRift = 11,
 		HowlingAbyss = 12,
 		TFT = 22,
@@ -1005,12 +1005,29 @@ namespace Zeitgeist::SdkImport {
 		LowestDistanceMouse
 	};
 
+	enum struct PredictionReturnReason : std::int32_t {
+		Unknown = 0,
+		Statis,
+		Immobile,
+		WindingUp,
+		Channeling,
+		Teleporting,
+		Blinking,
+		StandingStill,
+		Dashing,
+		Walking,
+		ShortPath
+	};
+
 	enum struct PredictionCollisionFlags : std::uint32_t {
 		None = 0,
 		Minions = 1 << 0,
 		Heroes = 1 << 1,
 		Turrets = 1 << 2,
 		Inhibitors = 1 << 3,
+		Windwall = 1 << 4,
+
+		Debug = 1 << 30
 	};
 
 	DEFINE_ENUM_FLAG_OPERATORS(PredictionCollisionFlags)
@@ -1034,7 +1051,6 @@ namespace Zeitgeist::SdkImport {
 		CrabTop,
 		Herald
 	};
-
 
 #pragma endregion
 
@@ -1160,21 +1176,21 @@ namespace Zeitgeist::SdkImport {
 
 	struct StackString {
 		char m_szString[16];
-		std::uint32_t m_iSize;
-		std::uint32_t m_iCapacity;
+		std::int32_t m_iSize;
+		std::int32_t m_iCapacity;
 	};
 
 	struct AllocatedString {
 		char* m_szString;
-		std::uint32_t m_iSize;
-		std::uint32_t m_iCapacity;
+		std::int32_t m_iSize;
+		std::int32_t m_iCapacity;
 	};
 
 	template<typename T>
 	struct AllocatedArray {
 		T* m_pList;
-		std::uint32_t m_iSize;
-		std::uint32_t m_iCapacity;
+		std::int32_t m_iSize;
+		std::int32_t m_iCapacity;
 
 		const T& front() {
 			return this->m_pList[0];
@@ -1184,7 +1200,7 @@ namespace Zeitgeist::SdkImport {
 			return this->m_pList[this->m_iSize - 1];
 		}
 
-		std::uint32_t size() {
+		std::int32_t size() {
 			return this->m_iSize;
 		}
 
@@ -1209,9 +1225,9 @@ namespace Zeitgeist::SdkImport {
 	struct Vector {
 	public:
 
-		std::uint32_t m_iSize;
-		std::uint32_t m_iCapacity;
 		T* m_pData;
+		std::int32_t m_iSize;
+		std::int32_t m_iCapacity;
 
 		typedef T value_type;
 		typedef value_type* iterator;
@@ -1220,9 +1236,9 @@ namespace Zeitgeist::SdkImport {
 		using reference = T&;
 		using const_reference = const T&;
 		using value_type = T;
-		using size_type = std::uint32_t;
+		using size_type = std::int32_t;
 
-		constexpr Vector() : m_iSize(0), m_iCapacity(0), m_pData(NULL) {}
+		constexpr Vector() : m_pData(NULL), m_iSize(0), m_iCapacity(0) {}
 
 		Vector(const Vector<T>& stSource) {
 			this->m_iSize = this->m_iCapacity = 0; this->m_pData = NULL;
@@ -1237,7 +1253,7 @@ namespace Zeitgeist::SdkImport {
 		}
 
 		~Vector() {
-			if ( NULL != this->m_pData ) /*[[likely_old]]*/ {
+			if ( NULL != this->m_pData ) {
 				Globals::Free(this->m_pData);
 			}
 		}
@@ -1254,16 +1270,16 @@ namespace Zeitgeist::SdkImport {
 			return this->m_iCapacity;
 		}
 
-		T& operator[](std::uint32_t iIndex) {
+		T& operator[](std::int32_t iIndex) {
 			return this->m_pData[iIndex];
 		}
 
-		const T& operator[](std::uint32_t iIndex) const {
+		const T& operator[](std::int32_t iIndex) const {
 			return this->m_pData[iIndex];
 		}
 
 		void clear() {
-			if ( NULL != this->m_pData ) /*[[likely_old]]*/ {
+			if ( NULL != this->m_pData ) {
 				this->m_iSize = this->m_iCapacity = 0;
 				Globals::Free(this->m_pData);
 				this->m_pData = NULL;
@@ -1338,7 +1354,7 @@ namespace Zeitgeist::SdkImport {
 		}
 
 		void  resize(size_type iNewSize) {
-			if ( iNewSize > this->m_iCapacity ) /*[[likely_old]]*/ {
+			if ( iNewSize > this->m_iCapacity ) {
 				this->reserve(grow_capacity(iNewSize));
 			}
 
@@ -1355,7 +1371,7 @@ namespace Zeitgeist::SdkImport {
 			}
 
 			T* pNewData = reinterpret_cast<T*>(Globals::Malloc(iNewCapacity * sizeof(T)));
-			if ( this->m_pData ) /*[[likely_old]]*/ {
+			if ( this->m_pData ) {
 				memcpy(pNewData, this->m_pData, this->m_iSize * sizeof(T));
 				Globals::Free(this->m_pData);
 			}
@@ -1364,8 +1380,8 @@ namespace Zeitgeist::SdkImport {
 			this->m_iCapacity = iNewCapacity;
 		}
 
-		__attribute((noinline)) void push_back(const T& stT) {
-			if ( this->m_iSize == this->m_iCapacity ) [[unlikely_old]] {
+		void push_back(const T& stT) {
+			if ( this->m_iSize == this->m_iCapacity )  {
 				this->reserve(this->grow_capacity(this->m_iSize + 1));
 			}
 
@@ -1404,7 +1420,7 @@ namespace Zeitgeist::SdkImport {
 		T* insert(const T* pIterator, const T& stT) {
 			const std::ptrdiff_t pDelta = pIterator - this->m_pData;
 
-			if ( this->m_iSize == this->m_iCapacity ) [[unlikely_old]] {
+			if ( this->m_iSize == this->m_iCapacity )  {
 				this->reserve(this->grow_capacity(this->m_iSize + 1));
 			}
 
@@ -1418,20 +1434,23 @@ namespace Zeitgeist::SdkImport {
 		}
 
 		template<typename Comparator>
-		void do_quicksort(int iLeft, int iRight, Comparator pfnCompare) {
+		void DoQuickSort(std::int32_t iLeft, std::int32_t iRight, Comparator pfnCompare) {
 			if ( iLeft < iRight ) {
-				int iPivotIndex = (iLeft + iRight) / 2;
+				std::int32_t iPivotIndex = (iLeft + iRight) / 2;
 				const T& stPivot = this->operator[](iPivotIndex);
 
-				int iIndex = iLeft;
-				int jIndex = iRight;
+				std::int32_t iIndex = iLeft;
+				std::int32_t jIndex = iRight;
 				while ( iIndex <= jIndex ) {
+
 					while ( pfnCompare(this->operator[](iIndex), stPivot) ) {
 						iIndex++;
 					}
+
 					while ( pfnCompare(stPivot, this->operator[](jIndex)) ) {
 						jIndex--;
 					}
+
 					if ( iIndex <= jIndex ) {
 						std::swap(this->operator[](iIndex), this->operator[](jIndex));
 						iIndex++;
@@ -1439,20 +1458,20 @@ namespace Zeitgeist::SdkImport {
 					}
 				}
 
-				do_quicksort(iLeft, jIndex, pfnCompare);
-				do_quicksort(iIndex, iRight, pfnCompare);
+				DoQuickSort(iLeft, jIndex, pfnCompare);
+				DoQuickSort(iIndex, iRight, pfnCompare);
 			}
 		}
 
 		template<typename Comparator>
 		void sort(Comparator pfnCompare) {
-			do_quicksort(0, this->m_iSize - 1, pfnCompare);
+			DoQuickSort(0, this->m_iSize - 1, pfnCompare);
 		}
 	};
 
 	struct PredictionInput {
 		GameObject* m_pSource = NULL;
-		Vector3 m_vecSourcePosition;
+		Vector3 m_vecSourcePosition = { 0.f, 0.f, 0.f };
 
 		bool m_bHitBox = false;
 		float m_flRange = 0.f;
@@ -1460,10 +1479,10 @@ namespace Zeitgeist::SdkImport {
 		float m_flRadius = 0.f;
 		float m_flSpeed = 0.f;
 
-		PredictionCollisionFlags m_iFlags;
+		PredictionCollisionFlags m_iFlags = PredictionCollisionFlags::None;
 	};
 
-	struct PredictionOutput {
+	struct alignas(0x100) PredictionOutput {
 		PredictionInput m_stInput;
 
 		Vector3 m_vecTargetPosition;
@@ -1474,6 +1493,8 @@ namespace Zeitgeist::SdkImport {
 
 		bool m_bInRange = false;
 		bool m_bSeeThrough = false;
+
+		PredictionReturnReason m_iReturnReason = PredictionReturnReason::Unknown;
 	};
 
 	namespace CompileTimeRandom {
@@ -1583,7 +1604,7 @@ namespace Zeitgeist::SdkImport {
 		}
 
 		__forceinline constexpr CompileTimeString<T, iMaxSize >& operator=(const T* stOther) noexcept {
-			std::uint32_t iLength = 0;
+			std::size_t iLength = 0;
 			while ( *stOther ) {
 				EncryptCharacter(*stOther++, iLength++);
 
@@ -1961,8 +1982,8 @@ namespace Zeitgeist::SdkImport {
 
 			IMPORT_METHOD(bool, IsActive, (), (BuffInstance* pThis), (this))
 			IMPORT_METHOD(GameObject*, Caster, (), (BuffInstance* pThis), (this))
-			IMPORT_METHOD(std::uint32_t, Count, (), (BuffInstance* pThis), (this))
-			IMPORT_METHOD(std::uint32_t, Stacks, (), (BuffInstance* pThis), (this))
+			IMPORT_METHOD(std::int32_t, Count, (), (BuffInstance* pThis), (this))
+			IMPORT_METHOD(std::int32_t, Stacks, (), (BuffInstance* pThis), (this))
 
 			IMPORT_METHOD(char**, Name, (), (BuffInstance* pThis), (this))
 			IMPORT_METHOD(std::uint32_t, Hash, (), (BuffInstance* pThis), (this))
@@ -2199,7 +2220,7 @@ namespace Zeitgeist::SdkImport {
 #define CONTEXT_FACTORY g_pExportedNavigationPath
 	inline class NavigationPath* g_pExportedNavigationPath;
 	class NavigationPath {
-		IMPORT_METHOD(std::uint32_t, NextWaypointIndex, (), (NavigationPath* pThis), (this))
+		IMPORT_METHOD(std::int32_t, NextWaypointIndex, (), (NavigationPath* pThis), (this))
 			IMPORT_METHOD(AllocatedArray<Vector3>*, Nodes, (), (NavigationPath* pThis), (this))
 
 			IMPORT_METHOD(float, DashSpeed, (), (NavigationPath* pThis), (this))
@@ -2329,8 +2350,8 @@ namespace Zeitgeist::SdkImport {
 		virtual void RestoreCellData(const Vector<Vector3>& rgData, std::uint16_t iFlags) = 0;
 		virtual bool BuildPath(Vector3 vecStart, Vector3 vecEnd, bool bSmooth, Vector<Vector3>* pPath) = 0;
 
-		virtual std::uint32_t GridHeight() = 0;
-		virtual std::uint32_t GridWidth() = 0;
+		virtual std::int32_t GridHeight() = 0;
+		virtual std::int32_t GridWidth() = 0;
 	};
 
 	inline class MinimapViewController* g_pExportedMinimapViewController;
@@ -2345,7 +2366,7 @@ namespace Zeitgeist::SdkImport {
 	class MenuGUI {
 	public:
 
-		virtual std::uint32_t InputMode() = 0;
+		virtual std::int32_t InputMode() = 0;
 
 		bool IsGameInput() {
 			return 0 == this->InputMode();
@@ -2386,7 +2407,7 @@ namespace Zeitgeist::SdkImport {
 		virtual float RoundFStepUp(const float flValue, const float flStep) = 0;
 		virtual float RoundFStepDown(const float flValue, const float flStep) = 0;
 		virtual bool IsOnSegment(const Vector3& vecPosition, const Vector3& vecSegmentStart, const Vector3& vecSegmentEnd, Vector3& vecSegmentPosition) = 0;
-		virtual std::uint32_t CircleLineIntersection(Vector3 vecPosition, float flRadius, Vector3 vecPoint1, Vector3 vecPoint2, Vector3& vecIntersect1, Vector3& vecIntersect2) = 0;
+		virtual std::int32_t CircleLineIntersection(Vector3 vecPosition, float flRadius, Vector3 vecPoint1, Vector3 vecPoint2, Vector3& vecIntersect1, Vector3& vecIntersect2) = 0;
 		virtual bool LineIntersection(const Vector3& vecLine1Start, const Vector3& vecLine1End, const Vector3& vecLine2Start, const Vector3& vecLine2End, Vector3& vecIntersect) = 0;
 		virtual bool CalculateMinimumEnclosingCircle(Vector<Vector3> rgPoints, Vector3& vecCenter, float& flRadius) = 0;
 
@@ -2468,7 +2489,7 @@ namespace Zeitgeist::SdkImport {
 	class Renderer {
 	private:
 		DrawList* m_rgDrawLists[3];
-		std::uint32_t m_iDrawListIndex;
+		std::int32_t m_iDrawListIndex;
 
 	public:
 		virtual bool WorldToScreen(const Vector3& vecPosition, Vector3* pPosition) = 0;
@@ -2502,6 +2523,8 @@ namespace Zeitgeist::SdkImport {
 	public:
 		Vector<GameObject*>* m_pMinions;
 		Vector<GameObject*>* m_pHeroes;
+		float* m_pMoveLimitTimer = NULL;
+		float* m_pAttackLimitTimer = NULL;
 
 	public:
 		virtual bool IsProcessingAttack() = 0;
@@ -2514,7 +2537,7 @@ namespace Zeitgeist::SdkImport {
 		virtual Mode* GetMode(OrbwalkerMode iMode) = 0;
 
 		// only use if blocking attacks & casting at the same time
-		virtual void SetIsProcessingAttack() = 0;
+		virtual void SetIsProcessingAttack() = 0;		
 	};
 
 	inline class HealthPrediction* g_pExportedHealthPrediction;
@@ -2565,7 +2588,7 @@ namespace Zeitgeist::SdkImport {
 	};
 
 	struct CampData {
-		std::uint32_t m_iCampId;
+		std::int32_t m_iCampId;
 		float m_flInitialSpawnTime = 0.f;
 		float m_flKillTime = 0.f;
 		float m_flRespawnTime = 0.f;
@@ -2574,10 +2597,10 @@ namespace Zeitgeist::SdkImport {
 	inline class CampManager* g_pExportedCampManager;
 	class CampManager {
 	public:
-		virtual CampData* GetData(std::uint32_t iCampId) = 0;
+		virtual CampData* GetData(std::int32_t iCampId) = 0;
 
 		// class id, flags, position, team should work fine. anything else is undefined behaviour as the object is different from AIBaseClient
-		virtual GameObject* GetCampObject(std::uint32_t iCampId) = 0;
+		virtual GameObject* GetCampObject(std::int32_t iCampId) = 0;
 	};
 
 	inline class SpellDatabaseClient* g_pExportedSpellDatabaseClient;
@@ -2597,7 +2620,7 @@ namespace Zeitgeist::SdkImport {
 		alignas(4) bool m_bIsBeingHeldDown;
 
 		union {
-			alignas(4) std::uint32_t m_iSelectedItem;
+			alignas(4) std::int32_t m_iSelectedItem;
 			alignas(4) std::uint32_t m_iSelectedColor;
 		};
 
@@ -2612,7 +2635,7 @@ namespace Zeitgeist::SdkImport {
 		virtual MenuElement* AddSeparator(const CompileTimeString<char, 64>& stDisplayName, bool bPermaShow = false) = 0;
 		virtual MenuElement* AddKeybind(const CompileTimeString<char, 64>& stDisplayName, std::uint32_t iConfigHash, std::uint32_t iKeyCode, bool bChat = true, bool bPermaShow = false, bool bSaveState = false) = 0;
 		virtual MenuElement* AddSlider(const CompileTimeString<char, 64>& stDisplayName, std::uint32_t iConfigHash, float flMin, float flMax, float flValue, int iDecimals, float flStep = 1.f, bool bPermaShow = false) = 0;
-		virtual MenuElement* AddDropdown(const CompileTimeString<char, 64>& stDisplayName, std::uint32_t iConfigHash, Vector<CompileTimeString<char, 64>> rgItems, std::uint32_t iDefaultItem) = 0;
+		virtual MenuElement* AddDropdown(const CompileTimeString<char, 64>& stDisplayName, std::uint32_t iConfigHash, Vector<CompileTimeString<char, 64>> rgItems, std::int32_t iDefaultItem) = 0;
 		virtual MenuElement* AddColorPicker(const CompileTimeString<char, 64>& stDisplayName, std::uint32_t iHash, std::uint32_t iRGBA) = 0;
 		virtual MenuElement* AddMenu(const CompileTimeString<char, 64>& stDisplayName, std::uint32_t iConfigHash) = 0;
 		virtual MenuElement* SetPermaShowName(const CompileTimeString<char, 64>& stPermaShowName) = 0;
@@ -2653,7 +2676,7 @@ namespace Zeitgeist::SdkImport {
 	public:
 		bool Enabled() { return this->m_bEnabled; }
 		bool IsBeingHeldDown() { return this->m_bIsBeingHeldDown; }
-		std::uint32_t SelectedItem() { return this->m_iSelectedItem; }
+		std::int32_t SelectedItem() { return this->m_iSelectedItem; }
 		std::uint32_t SelectedColor() { return this->m_iSelectedColor; }
 		float Value() { return this->m_flValue; }
 	};
@@ -2779,18 +2802,19 @@ namespace Zeitgeist::SdkImport {
 
 			struct {
 				std::uint64_t m_iTotal = NULL;
-
+				std::uint64_t m_iInside = NULL;
 				std::uint64_t m_iSafe = NULL;
 				std::uint64_t m_iUnsafe = NULL;
-				std::uint64_t m_iDangerous = NULL;
+				std::uint64_t m_iLeaving = NULL;
 			} m_stSafety;
+
+			std::uint64_t m_rgDangerLevels[5];
 
 			float m_flTimeToTravel = 0.f;
 			float m_flTimeToHitMax = 0.f;
 			float m_flTimeToHitMin = FLT_MAX;
-			float m_flDangerLevelMax = 0.f;
 
-			float m_flAngle = 0.f;   // reserved, default value 0
+			float m_flAngle = 0.f; // reserved, default value 0
 			bool m_bDispose = false; // reserved
 		};
 
@@ -2804,9 +2828,9 @@ namespace Zeitgeist::SdkImport {
 			virtual bool IsPathSafe(Vector<Vector3>* pNodes, float flSpeed, float flDelay, float flBuffer, std::uint32_t iReserved = NULL, PositionSafetyData* pPositionSafetyData = NULL) = 0;
 			virtual bool IsPositionSafe(const Vector3& vecPosition, bool bPathfindPolygon = false, bool bClippingPolygon = false) = 0;
 			virtual SpellMetaData* GetSpellMetaData() = 0;
-			virtual Vector3 GetStartPosition();
-			virtual Vector3 GetEndPosition();
-			virtual Vector3 GetPosition(float flDelta = 0.f);
+			virtual Vector3 GetStartPosition() = 0;
+			virtual Vector3 GetEndPosition() = 0;
+			virtual Vector3 GetPosition(float flDelta = 0.f) = 0;
 		};
 
 		class Sdk {
@@ -2814,7 +2838,7 @@ namespace Zeitgeist::SdkImport {
 
 			virtual Vector<SpellCastInstance*>* ActiveSpellInstances() = 0;
 			virtual void* GetEvadeMethod(std::uint32_t iSpellHash) = 0;
-			virtual std::uint64_t ActiveEvadingBitmap();
+			virtual std::uint64_t ActiveEvadingBitmap() = 0;
 		};
 	};
 
@@ -2894,7 +2918,7 @@ namespace Zeitgeist::SdkImport {
 
 		float m_flDisplayWidth = 0.f;
 		float m_flDisplayHeight = 0.f;
-		std::uint32_t m_iMapId;
+		std::int32_t m_iMapId;
 		bool m_bIsReplay;
 		bool m_bIsMatchmade;
 

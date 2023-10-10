@@ -43,10 +43,10 @@ namespace Katarina
 
     inline float Limiter = 0.f;
     inline Vector3* Cursor = { };
-    inline Spell* KatarinaQ = nullptr;
-    inline Spell* KatarinaW = nullptr;
-    inline Spell* KatarinaE = nullptr;
-    inline Spell* KatarinaR = nullptr;
+    inline Spell* KatQ = nullptr;
+    inline Spell* KatW = nullptr;
+    inline Spell* KatE = nullptr;
+    inline Spell* KatR = nullptr;
     inline Spell* Ignite = nullptr;
 
     namespace Menu
