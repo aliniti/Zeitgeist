@@ -13,45 +13,59 @@ namespace Katarina
     void OnTerminate( );
     void OnDraw( );
     void OnPresentDraw( );
-    void OnCreateParticle( GameObject* pObject, std::uint32_t iHash );
-    Vector3 ShunpoPosition( GameObject* pObject );
     void OnPreUpdate( );
     void OnUpdate( );
-    void OnPostUpdate( );
-    float DynamicRange( );
     
-    bool CanPostExecute( GameObject* pObject );
-    bool CanPreExecute( GameObject* pObject );
-    bool Spinning( );
-
-    void UseQ( );
-    void UseW( );
-    void UseE( float range );
-    void UseR( );
-    void UseIgnite( );
+    bool CanPostExecute( GameObject* unit );
+    bool CanPreExecute( GameObject* unit );
+    
+    void UseQ( GameObject* unit );
+    void UseW( GameObject* unit );
+    void UseE( GameObject* unit, float range );
+    void UseR( GameObject* unit );
+    void GapE( );
+    
+    void UseIgnite( GameObject* unit );
     void UseProtoBelt( float range );
-    void Flee();
+
+    void Auto( );
+    void Combo( );
+    void Harass( );
+    void LastHit( );
+    void Flee( );
+
+    void OnCreateParticle( GameObject* pObject, std::uint32_t iHash );
+    void RenderDaggers( );
+    void RemoveDaggers( );
+
+    Vector<GameObject*> ShunpoJumpList( );
+    Vector3 ShunpoPosition( GameObject* pObject, bool hero = true );
+    float DynamicRange( );
+    bool Spinning( );
     
     float UltDmg( GameObject* pObject, float time );
     float GroundDaggerDmg( GameObject* pObject, bool draw = false );
     float ShunpoDmg( GameObject* pObject );
     float DaggerDmg( GameObject* pObject );
     float IgniteDmg( );
+
+    // - setup menu
+    void SetupMenu( );
     
     [[clang::no_destroy]] inline Vector<Dagger> Daggers;
-    [[clang::no_destroy]] inline Vector<GameObject*> ShunpoObjects;
-
-    inline float Limiter = 0.f;
-    inline Vector3* Cursor = { };
+    [[clang::no_destroy]] inline Vector<GameObject*> JumpList;
+    
     inline Spell* KatQ = nullptr;
     inline Spell* KatW = nullptr;
     inline Spell* KatE = nullptr;
     inline Spell* KatR = nullptr;
     inline Spell* Ignite = nullptr;
+    inline Utils* Utils;
 
     namespace Menu
     {
         inline MenuElement* Root = nullptr;
+        inline MenuElement* Debug = nullptr;
         
         inline MenuElement* DrawQ = nullptr;
         inline MenuElement* ColorQ = nullptr;

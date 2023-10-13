@@ -1,64 +1,21 @@
+// ReSharper disable CppClangTidyClangDiagnosticImplicitIntFloatConversion
 #include "../stdafx.hpp"
 
 namespace Katarina
 {
+    // ░█░█░█▀█░▀█▀░█▀█░█▀▄░▀█▀░█▀█░█▀█
+    // ░█▀▄░█▀█░░█░░█▀█░█▀▄░░█░░█░█░█▀█
+    // ░▀░▀░▀░▀░░▀░░▀░▀░▀░▀░▀▀▀░▀░▀░▀░▀
+    // By Kurisu :^)
+    
     void OnBoot()
     {
-        Menu::Root = g_pExportedMenu->AddMenu("EzSeries", MenuConfig("EzSeries"));
-        Menu::Root->AddSeparator( MenuString( "Katarina" ) );
+        SetupMenu(  );
 
-        const auto q_menu = Menu::Root->AddMenu( MenuString( "Bouncing Blade (Q)" ), MenuConfig( "BouncingBlade" ) );
-        Menu::UseQ = q_menu->AddCheckbox( MenuString( "Use Bouncing Blade (Q)" ), MenuConfig( "katarina.use.q" ), true );
-        Menu::LastHitQ = q_menu->AddCheckbox( MenuString( "- Last Hit" ), MenuConfig( "katarina.last.hit.q" ), true );
-        Menu::DaggerCalc = q_menu->AddSlider( MenuString( "- Daggers (Dmg Calc)" ), MenuConfig( "katarina.q.daggers" ), 0, 3, 2, 0, 1 );
-        Menu::DaggerCalc->SetTooltipName( TooltipString( "Calculates as if # daggers near target." ) );
-        Menu::DrawDagger = q_menu->AddCheckbox( MenuString( "- Draw Dagger Lifetime" ), MenuConfig( "katarina.dagger.life" ), true );
-        Menu::DrawQ = q_menu->AddCheckbox( MenuString( "- Draw Range" ), MenuConfig( "katarina.q.draw" ), true );
-
-        const auto w_menu = Menu::Root->AddMenu( MenuString( "Preparation (W)" ), MenuConfig( "Preparation" ) );
-        Menu::UseW = w_menu->AddCheckbox( MenuString( "Use Preparation (W)" ), MenuConfig( "katarina.use.w" ), true );
-        Menu::FleeW = w_menu->AddCheckbox( MenuString( "- Flee" ), MenuConfig( "katarina.use.w.flee" ), true );
-
-        const auto e_menu = Menu::Root->AddMenu( MenuString( "Shunpo (E)" ), MenuConfig( "Shunpo" ) );
-        Menu::UseE = e_menu->AddCheckbox( MenuString( "Use Shunpo (E)" ), MenuConfig( "katarina.use.e" ), true );
-        Menu::FleeE = e_menu->AddCheckbox( MenuString( "- Flee" ), MenuConfig( "katarina.use.e.flee" ), true );
-        Menu::FleeE->SetTooltipName( TooltipString( "Soon" ) );
-        
-        Vector<CompileTimeString<char, 64>> shunpo_mode_items;
-        shunpo_mode_items.push_back( MenuString( "Front" ) );
-        shunpo_mode_items.push_back( MenuString( "Behind" ) );
-        shunpo_mode_items.push_back( MenuString( "Auto (Beta)" ) );
-        Menu::ShunpoMode = e_menu->AddDropdown( MenuString( "- Position:" ), MenuConfig( "katarina.e.where" ), shunpo_mode_items, 0 );
-
-        Menu::DiveE = e_menu->AddKeybind( MenuString( "- Turret Dive" ), MenuConfig( "katarina.dive.e" ), 'T', true, true );
-        Menu::DrawE = e_menu->AddCheckbox( MenuString( "- Draw Range" ), MenuConfig( "katarina.e.draw" ), true );
-        //Menu::FleeE = menu->AddCheckbox( MenuString( "- Use In Flee" ), MenuConfig( "katarina.use.flee.e" ), true );
-
-        const auto r_menu = Menu::Root->AddMenu( MenuString( "Death Lotus (R)" ), MenuConfig( "DeathLotus" ) );
-        Menu::UseR = r_menu->AddCheckbox( MenuString( "Use Death Lotus (R)" ), MenuConfig( "katarina.use.r" ), true );
-
-        Vector<CompileTimeString<char, 64>> ult_mode_items;
-        ult_mode_items.push_back( MenuString( "Always" ) );
-        ult_mode_items.push_back( MenuString( "Killable" ) );
-        Menu::UltMode = r_menu->AddDropdown( MenuString( "- Use When:" ), MenuConfig( "katarina.r.when" ), ult_mode_items, 0 );
-
-        Menu::AutoR = r_menu->AddSlider( MenuString( "- Auto use if # in Range" ), MenuConfig( "katarina.auto.r" ), 1, 6, 3, 0, 1 );
-        Menu::Channel = r_menu->AddSlider( MenuString( "- Channel Time (Dmg Calc)" ), MenuConfig( "katarina.r.channel" ), 0.0, 2.5, 2.0, 1, .1 );
-        Menu::Cancel = r_menu->AddCheckbox( MenuString( "- Cancel if None in Range" ), MenuConfig( "katarina.use.r.cancel" ), true );
-        Menu::DrawR = r_menu->AddCheckbox( MenuString( "- Draw Range" ), MenuConfig( "katarina.r.draw" ), true );
-
-        Menu::Root->AddSeparator( MenuString( "Mechanics" ) );
-        Menu::UseIgnite = Menu::Root->AddCheckbox( MenuString( "Use Ignite" ), MenuConfig( "katarina.use.ignite" ), true );
-        Menu::UseItems = Menu::Root->AddCheckbox( MenuString( "Use Rocketbelt" ), MenuConfig( "katarina.use.items" ), true );
-        //Menu::Killsteal = Menu::Root->AddCheckbox( MenuString( "Killsteal" ), MenuConfig( "katarina.ks" ), false );
-        //Menu::Killsteal->SetTooltipName( TooltipString( "Soon" ) );
-        
-        Vector<CompileTimeString<char, 64>> spell_priority;
-        spell_priority.push_back( MenuString( "E -> Q" ) );
-        spell_priority.push_back( MenuString( "Q -> E" ) );
-        Menu::Toggle = Menu::Root->AddKeybind( MenuString( "Combo Priority" ), MenuConfig( "katarina.toggle" ), 'X', true );
-        Menu::DrawHPBar = Menu::Root->AddCheckbox( MenuString( "HPBarFill Draw" ), MenuConfig( "katarina.r.draw.hp" ), true );
-        Menu::Root->AddSeparator( MenuString( "EzSeries v0.51" ) );
+        KatQ = new Spell( Q, 625 );
+        KatW = new Spell( W, 325 );
+        KatE = new Spell( E, 725 );
+        KatR = new Spell( R, 550 );
 
         if (GetPlayer(  )->Spellbook(  )->GetSpell( Summoner1 )->SpellData(  )->Hash(  ) == FNV1A32CI("SummonerDot"))
             Ignite = new Spell ( Summoner1, 600);
@@ -66,65 +23,47 @@ namespace Katarina
         if (GetPlayer(  )->Spellbook(  )->GetSpell( Summoner2 )->SpellData(  )->Hash(  ) == FNV1A32CI("SummonerDot"))
             Ignite = new Spell ( Summoner2, 600);
 
-        KatQ = new Spell( Q, 625 );
-        KatW = new Spell( W, 325 );
-        KatE = new Spell( E, 725 );
-        KatR = new Spell( R, 550 );
-
-        Cursor = g_pExportedHudManager->CursorPositionUnclipped( );
+        if ( Menu::Debug->Enabled(  ) )
+            Globals::Write( "Katarina Loaded!\n" );
     }
 
     void OnTerminate( )
     {
         Menu::Root->Release(  );
     }
+
+    // ░█▀▄░█▀▀░█▀█░█▀▄░█▀▀░█▀▄
+    // ░█▀▄░█▀▀░█░█░█░█░█▀▀░█▀▄
+    // ░▀░▀░▀▀▀░▀░▀░▀▀░░▀▀▀░▀░▀
+    #pragma region Render
     
     void OnDraw( )
     {
-        if (GetPlayer(  )->IsDead(  ))
-            return;
+        RenderDaggers(  );
         
-        const auto q_opacity = GetPlayer(  )->Spellbook(  )->CanUseSpell( Q ) ? 255 : 25;
-        if ( Menu::DrawQ->Enabled( ) && GetPlayer(  )->Spellbook(  )->GetSpell( Q )->Level(  ) > 0 )
+        if (!GetPlayer(  )->IsDead(  ))
         {
-            g_pExportedRenderer->GetCurrentDrawList( )->AddCircle( GetPlayer( )->Position( ), KatQ->Range( ), 6, RGBA( 0, 0, 0, q_opacity ) );
-            g_pExportedRenderer->GetCurrentDrawList( )->AddCircle( GetPlayer( )->Position( ), KatQ->Range( ), 3, RGBA( 255, 51, 204, q_opacity ) );
-        }
-
-        const auto e_opacity = GetPlayer(  )->Spellbook(  )->CanUseSpell( E ) ? 255 : 25;
-        if ( Menu::DrawE->Enabled( ) && GetPlayer(  )->Spellbook(  )->GetSpell( E )->Level(  ) > 0 )
-        {
-            g_pExportedRenderer->GetCurrentDrawList( )->AddCircle( GetPlayer( )->Position( ), KatE->Range( ), 6, RGBA( 0, 0, 0, e_opacity ) );
-            g_pExportedRenderer->GetCurrentDrawList( )->AddCircle( GetPlayer( )->Position( ), KatE->Range( ), 3, RGBA( 255, 51, 204, e_opacity ) );
-        }
-
-        const auto r_opacity = GetPlayer(  )->Spellbook(  )->CanUseSpell( R ) ? 255 : 25;
-        if ( Menu::DrawR->Enabled( ) && GetPlayer(  )->Spellbook(  )->GetSpell( R )->Level(  ) > 0 )
-        {
-            g_pExportedRenderer->GetCurrentDrawList( )->AddCircle( GetPlayer( )->Position( ), KatR->Range( ), 6, RGBA( 0, 0, 0, r_opacity ) );
-            g_pExportedRenderer->GetCurrentDrawList( )->AddCircle( GetPlayer( )->Position( ), KatR->Range( ), 3, RGBA( 255, 255, 255, r_opacity ) );
-        }
-        
-        for ( auto i : Daggers )
-        {
-            if ( Menu::DrawDagger->Enabled( ) )
+            const auto q_opacity = GetPlayer( )->Spellbook( )->CanUseSpell( Q ) ? 255 : 25;
+            if ( Menu::DrawQ->Enabled( ) && GetPlayer( )->Spellbook( )->GetSpell( Q )->Level( ) > 0 )
             {
-                Vector3 wts;
-                g_pExportedRenderer->WorldToScreen( i.Position, &wts );
-                double time_left = 5.0 - ( g_pExportedGlobalClocks->GameTime( ) - i.CreateTime );
+                g_pExportedRenderer->GetCurrentDrawList( )->AddCircle( GetPlayer( )->Position( ), KatQ->Range( ), 6, RGBA( 0, 0, 0, q_opacity ) );
+                g_pExportedRenderer->GetCurrentDrawList( )->AddCircle( GetPlayer( )->Position( ), KatQ->Range( ), 3, RGBA( 204, 255, 51, q_opacity ) );
+            }
 
-                char Buffer[64];
-                Globals::Sprintf( Buffer, "%2.f", time_left );
+            const auto e_opacity = GetPlayer( )->Spellbook( )->CanUseSpell( E ) ? 255 : 25;
+            if ( Menu::DrawE->Enabled( ) && GetPlayer( )->Spellbook( )->GetSpell( E )->Level( ) > 0 )
+            {
+                g_pExportedRenderer->GetCurrentDrawList( )->AddCircle( GetPlayer( )->Position( ), KatE->Range( ), 6, RGBA( 0, 0, 0, e_opacity ) );
+                g_pExportedRenderer->GetCurrentDrawList( )->AddCircle( GetPlayer( )->Position( ), KatE->Range( ), 3, RGBA( 204, 255, 51, e_opacity ) );
+            }
 
-                g_pExportedRenderer->GetCurrentDrawList( )->AddCircle( i.Position, KatW->Range( ), 4, RGBA( 0, 0, 0, 255 ) );
-                g_pExportedRenderer->GetCurrentDrawList( )->AddCircle( i.Position, KatW->Range( ), 2, RGBA( 255, 51, 204, 255 ) );
-                g_pExportedRenderer->GetCurrentDrawList( )->AddCircle( i.Position, KatW->Range( ) / 2 + 2, 2, RGBA( 0, 0, 0, 255 ) );
-                g_pExportedRenderer->GetCurrentDrawList( )->AddCircle( i.Position, KatW->Range( ) / 2, 2, RGBA( 255, 51, 204, 255 ) );
-                g_pExportedRenderer->GetCurrentDrawList( )->AddTextA( nullptr, Buffer, 75, wts.x + 1, wts.y + 1, RGBA( 0, 0, 0, 255 ) );
-                g_pExportedRenderer->GetCurrentDrawList( )->AddTextA( nullptr, Buffer, 75, wts.x, wts.y, RGBA( 255, 51, 204, 255 ) );
+            const auto r_opacity = GetPlayer( )->Spellbook( )->CanUseSpell( R ) ? 255 : 25;
+            if ( Menu::DrawR->Enabled( ) && GetPlayer( )->Spellbook( )->GetSpell( R )->Level( ) > 0 )
+            {
+                g_pExportedRenderer->GetCurrentDrawList( )->AddCircle( GetPlayer( )->Position( ), KatR->Range( ), 6, RGBA( 0, 0, 0, r_opacity ) );
+                g_pExportedRenderer->GetCurrentDrawList( )->AddCircle( GetPlayer( )->Position( ), KatR->Range( ), 3, RGBA( 255, 255, 255, r_opacity ) );
             }
         }
-        
     }
 
     void OnPresentDraw( )
@@ -139,113 +78,65 @@ namespace Katarina
             }
         }
 
-        if (GetPlayer(  )->IsDead(  ))
-            return;
-
-        if (Menu::Toggle->Enabled(  ))
+        if ( !GetPlayer(  )->IsDead(  ) )
         {
-            Vector3 wts;
-            g_pExportedRenderer->WorldToScreen( GetPlayer(  )->Position(  ), &wts );
-            g_pExportedRenderer->GetCurrentDrawList( )->AddTextA( nullptr, "Combo: Q->E", 15, wts.x - 40 + 1, wts.y + 1, RGBA( 0, 0, 0, 255 ) );
-            g_pExportedRenderer->GetCurrentDrawList( )->AddTextA( nullptr, "Combo: Q->E", 15, wts.x - 40, wts.y, RGBA( 255, 51, 204, 255 ) );
-        }
-        else
-        {
-            Vector3 wts;
-            g_pExportedRenderer->WorldToScreen( GetPlayer(  )->Position(  ), &wts );
-            g_pExportedRenderer->GetCurrentDrawList( )->AddTextA( nullptr, "Combo: E->Q", 15, wts.x - 40 + 1, wts.y + 1, RGBA( 0, 0, 0, 255 ) );
-            g_pExportedRenderer->GetCurrentDrawList( )->AddTextA( nullptr, "Combo: E->Q", 15, wts.x - 40, wts.y, RGBA( 255, 51, 204, 255 ) );
-        }
-    }
-
-    void OnCreateParticle( GameObject* pObject, std::uint32_t iHash )
-    {
-        if ( pObject != nullptr )
-        {
-            if ( iHash == FNV1A32CI( "Katarina_Dagger_Ground_Indicator" ) )
+            if ( Menu::Toggle->Enabled( ) )
             {
-                Daggers.push_back( {.
-                    Obj = pObject, .Position = pObject->Position( ), .
-                    CreateTime = g_pExportedGlobalClocks->GameTime( ), } );
+                Vector3 wts;
+                g_pExportedRenderer->WorldToScreen( GetPlayer( )->Position( ), &wts );
+                g_pExportedRenderer->GetCurrentDrawList( )->AddTextA( nullptr, "Combo: Q->E", 15, wts.x - 40 + 1, wts.y + 1, RGBA( 0, 0, 0, 255 ) );
+                g_pExportedRenderer->GetCurrentDrawList( )->AddTextA( nullptr, "Combo: Q->E", 15, wts.x - 40, wts.y, RGBA( 204, 255, 51, 255 ) );
+            }
+            else
+            {
+                Vector3 wts;
+                g_pExportedRenderer->WorldToScreen( GetPlayer( )->Position( ), &wts );
+                g_pExportedRenderer->GetCurrentDrawList( )->AddTextA( nullptr, "Combo: E->Q", 15, wts.x - 40 + 1, wts.y + 1, RGBA( 0, 0, 0, 255 ) );
+                g_pExportedRenderer->GetCurrentDrawList( )->AddTextA( nullptr, "Combo: E->Q", 15, wts.x - 40, wts.y, RGBA( 204, 255, 51, 255 ) );
             }
         }
     }
-
-    Vector3 ShunpoPosition( GameObject* pObject )
-    {
-        if ( pObject == nullptr )
-        {
-            return { };
-        }
-
-        for ( auto& d : Daggers )
-        {
-            auto blade = d.Obj;
-
-            if ( pObject->DistanceXZ( blade ) <= KatW->Range( ) + pObject->BoundingRadius( ) )
-            {
-                if ( blade->DistanceXZ( GetPlayer( ) ) <= KatE->Range( ) + KatW->Range( ) )
-                {
-                    if ( CanPostExecute( pObject ) || blade->DistanceXZ( GetPlayer( ) ) > KatW->Range( ) - 115 )
-                    {
-                        return blade->Position( );
-                    }
-                }
-            }
-        }
-
-        Vector3 pos;
-
-        switch ( Menu::ShunpoMode->SelectedItem( ) )
-        {
-            case 0:
-                pos = pObject->Position( ) + ( GetPlayer( )->Position( ) - pObject->Position( ) ).NormalizeXZ( ) * 135;
-                break;
-            case 1:
-                pos = pObject->Position( ) + ( GetPlayer( )->Position( ) - pObject->Position( ) ).NormalizeXZ( ) * -135;
-                break;
-            case 2:
-                auto pred = g_pExportedPrediction->CalculateIntercept( pObject, { .m_flDelay = g_pExportedNetClient->RoundTripLatency( ) / 1000 } );
-                auto walk_to = pObject->Position( ).Extend( pred, 100 );
-                auto reverse = pObject->Position( ) + ( walk_to - pObject->Position( ) ).NormalizeXZ( ) * -135;
-                pos = reverse;
-                break;
-        }
-        
-        return pos;
-    }
-
+    
+    #pragma endregion
+    
+    // ░▀█▀░▀█▀░█▀▀░█░█░█▀▀
+    // ░░█░░░█░░█░░░█▀▄░▀▀█
+    // ░░▀░░▀▀▀░▀▀▀░▀░▀░▀▀▀
+    #pragma region Ticks
+    
     void OnPreUpdate( )
     {
         if ( Spinning(  ) && Menu::UseR->Enabled(  ))
         {
             auto target = g_pExportedTargetSelector->GetTarget( KatE->Range(  ), true );
-            if ( target != nullptr && CanPostExecute( target ) && Utils::IsValidTarget( target ))
+            if ( target != nullptr && CanPostExecute( target ) && Utils->IsValidTarget( target ))
             {
                 if (g_pExportedOrbwalker->GetMode( OrbwalkerMode::Combo )->Enabled(  ))
                 {
-                    if (Menu::Toggle->Enabled(  ))
+                    if (Menu::Toggle->Enabled(  ) )
                     {
-                        UseQ( );
-                        UseE( KatQ->Range(  ) - 115);
+                        UseQ( target );
+                        UseE( target, KatE->Range(  ) );
                     }
                     else
                     {
-                        UseE( KatE->Range(  ) );
-                        UseQ( );
+                        UseE( target, KatE->Range(  ) );
+                        UseQ( target );
                     }
                 }
-                
-                //Globals::Write( "Cancel: Execute!\n" );
-                //Globals::Write( target->Name(  )->c_str(  ) );
+
+                if (Menu::Debug->Enabled(  ))
+                    Globals::Write( "Cancel: Execute!\n" );
             }
 
-            if ( Utils::CountEnemiesInRange( GetPlayer( ), 500 ) < 1 && Menu::Cancel->Enabled( ) )
+            if ( Utils->CountEnemiesInRange( GetPlayer( ), 500 ) < 1 && Menu::Cancel->Enabled( ) )
             {
                 auto pos = g_pExportedHudManager->CursorPositionUnclipped( );
                 auto new_pos = GetPlayer(  )->Position(  ).Extend( *pos, GetPlayer(  )->BoundingRadius(  ) + 400);
                 GetPlayer( )->IssueMoveOrder( &new_pos, false, false, true, true, &Limiter );
-                //Globals::Write( "Cancel: none in range!\n" );
+                
+                if (Menu::Debug->Enabled(  ))
+                    Globals::Write( "Cancel: None in Range!\n" );
             }
         }
     }
@@ -253,151 +144,35 @@ namespace Katarina
     void OnUpdate( )
     {
         OnPreUpdate( );
-        
-        if ( Utils::CountEnemiesInRange( GetPlayer(  ), 550) >= Menu::AutoR->Value(  ) )
-        {
-            if ( Menu::UseR->Enabled(  ) &&  KatR->IsReady(  ) )
-            {
-                if ( KatW->IsReady( ) && !Spinning(  ) )
-                {
-                    KatW->Cast( );
-                }
-
-                if ( KatR->IsReady(  ) )
-                {
-                    KatR->Cast( );
-                }
-            }
-        }
-        
-        if ( g_pExportedOrbwalker->GetMode( OrbwalkerMode::Combo )->Enabled( ) )
-        {
-            if ( !Spinning(  ) )
-            {
-                if (Menu::Toggle->Enabled(  ))
-                {
-                    UseQ( );
-                    UseE( KatQ->Range(  ) - 115 );
-                    UseW( );
-                    UseR( );
-                    UseIgnite(  );
-                }
-                else
-                {
-                    UseE( KatE->Range(  ) );
-                    UseQ( );
-                    UseW( );
-                    UseR( );
-                    UseIgnite(  );
-                }
-            }
-        }
-
-        if ( g_pExportedOrbwalker->GetMode( OrbwalkerMode::Harass )->Enabled( ) ||
-            g_pExportedOrbwalker->GetMode( OrbwalkerMode::LaneClear )->Enabled( ) )
-        {
-            // - dont harass under turret
-            if ( !Utils::UnderEnemyTurret( ) )
-            {
-                if ( !Spinning(  ) )
-                {
-                    UseQ( );
-                    UseW( );
-                }
-            }
-        }
-
-        if ( g_pExportedOrbwalker->GetMode( OrbwalkerMode::LastHit )->Enabled( ) ||
-            g_pExportedOrbwalker->GetMode( OrbwalkerMode::LaneClear )->Enabled( ) )
-        {
-            if ( Menu::UseQ->Enabled( ) && Menu::LastHitQ->Enabled( ) && KatQ->IsReady( ) )
-            {
-                for ( auto i : g_pExportedEntityManager->Minions( ) )
-                {
-                    if ( Utils::IsValidTarget( i, KatQ->Range(  ) ) && DaggerDmg( i ) >= i->Health( ) )
-                    {
-                        KatQ->Cast( i );
-                    }
-                }
-            }
-        }
-
-        if (g_pExportedOrbwalker->GetMode( OrbwalkerMode::Flee )->Enabled(  ))
-        {
-            // - preparation
-            if ( KatW->IsReady( ) && Menu::UseW->Enabled( ) )
-            {
-                KatW->Cast( );
-            }
-
-            Flee(  );
-        }
-        
-        OnPostUpdate( );
+        Auto( );
+        Combo( );
+        Harass(  );
+        LastHit( );
+        Flee( );
+        RemoveDaggers( );
     }
-
-    void OnPostUpdate( )
+    
+    #pragma endregion
+    
+    // ░█▀▀░█░█░█▀▀░█▀▀░█░█░▀█▀░█▀▀
+    // ░█▀▀░▄▀▄░█▀▀░█░░░█░█░░█░░█▀▀
+    // ░▀▀▀░▀░▀░▀▀▀░▀▀▀░▀▀▀░░▀░░▀▀▀
+    #pragma region Execute Logic
+    
+    bool CanPostExecute( GameObject* unit )
     {
-        // - dagger handling
-        for ( auto it = Daggers.begin( ); it != Daggers.end( ); it++ )
-        {
-            const auto blade = it->Obj;
-
-            // - remove invalid? blades
-            if ( blade == nullptr || !blade->IsActive( ) || !blade->IsVisible( ) )
-            {
-                //Globals::Write( "dagger deleted: invalid\n" );
-                Daggers.erase( it );
-                break;
-            }
-
-            // - remove blades ive picked up
-            if ( blade->Position( ).DistanceXZ( GetPlayer( )->Position( ) ) <= KatW->Range( ) - 115 )
-            {
-                //Globals::Write( "dagger deleted: proximity\n" );
-                Daggers.erase( it );
-                break;
-            }
-
-            // - remove blade after 4 seconds
-            if ( g_pExportedGlobalClocks->GameTime( ) - it->CreateTime > 4.0f )
-            {
-                //Globals::Write( "dagger deleted: expiry\n" );
-                Daggers.erase( it );
-                break;
-            }
-        }
-    }
-
-    float DynamicRange( )
-    {
-        if ( !KatE->IsReady( ) )
-        {
-            if ( g_pExportedGlobalClocks->GameTime( ) - KatE->LastCastTime( ) < 0.5 )
-            {
-                //Globals::Write( "TRUEE\n" );
-                return KatW->Range( );
-            }
-        }
-        
-        return KatQ->Range(  );
-    }
-
-    // - post execute while channeling ult
-    bool CanPostExecute( GameObject* pObject )
-    {
-        auto dmg = DaggerDmg( pObject ) + ShunpoDmg( pObject );
+        auto dmg = DaggerDmg( unit ) + ShunpoDmg( unit );
 
         for ( auto a : Daggers )
         {
             auto dagger = a.Obj;
-            if ( dagger->DistanceXZ( pObject ) <= KatW->Range( ) + pObject->BoundingRadius( ) )
+            if ( dagger->DistanceXZ( unit ) <= KatW->Range( ) + unit->BoundingRadius( ) )
             {
                 if ( KatE->IsReady( ) )
                 {
                     if ( dagger->DistanceXZ( GetPlayer( ) ) <= KatE->Range( ) + KatW->Range( ) )
                     {
-                        dmg += GroundDaggerDmg( pObject );
+                        dmg += GroundDaggerDmg( unit );
                         break;
                     }
                 }
@@ -405,51 +180,191 @@ namespace Katarina
                 {
                     if ( dagger->DistanceXZ( GetPlayer( ) ) <= KatW->Range( ) - 115 )
                     {
-                        dmg += GroundDaggerDmg( pObject );
+                        dmg += GroundDaggerDmg( unit );
                         break;
                     }
                 }
             }
         }
 
-        return dmg >= pObject->Health( );
+        return dmg >= unit->Health( );
+    }
+    
+    bool CanPreExecute( GameObject* unit )
+    {
+        auto daggers = Menu::DaggerCalc->Value( ) * GroundDaggerDmg( unit, true );
+        auto dmg = UltDmg( unit, Menu::Channel->Value( ) ) + DaggerDmg( unit ) + ShunpoDmg( unit ) + IgniteDmg(  );
+
+        return daggers + dmg >= unit->Health( );
     }
 
-    // - pre execute including everything
-    bool CanPreExecute( GameObject* pObject )
-    {
-        auto daggers = Menu::DaggerCalc->Value( ) * GroundDaggerDmg( pObject, true );
-        auto dmg = UltDmg( pObject, Menu::Channel->Value( ) ) + DaggerDmg( pObject ) + ShunpoDmg( pObject ) + IgniteDmg(  );
+    #pragma endregion
 
-        return daggers + dmg >= pObject->Health( );
-    }
-
-    bool Spinning( )
+    // ░█▄█░█▀█░█▀▄░█▀▀░█▀▀
+    // ░█░█░█░█░█░█░█▀▀░▀▀█
+    // ░▀░▀░▀▀▀░▀▀░░▀▀▀░▀▀▀
+    #pragma region  Modes
+    
+    void Auto( )
     {
-        return GetPlayer( )->HasBuff( FNV1A32CI( "katarinarsound" ) );
-    }
-
-    void UseQ( )
-    {
-        // - bounding blades
-        if ( KatQ->IsReady( ) && Menu::UseQ->Enabled( ) )
+        if ( Utils->CountEnemiesInRange( GetPlayer(  ), 550) >= Menu::AutoR->Value(  ) )  
         {
-            UseProtoBelt( DynamicRange(  ) );
-            auto target = g_pExportedTargetSelector->GetTarget( DynamicRange(  ), true );
-            if ( target != nullptr && Utils::IsValidTarget( target ) )
+            if ( Menu::UseR->Enabled(  ) &&  KatR->IsReady(  ) && !Spinning(  ))
             {
-                KatQ->Cast( target ) ;
+                (KatW->IsReady( ) ? KatW : KatR)->Cast( );
+            }
+        }
+    }
+    
+    void Combo( )
+    {
+        if ( g_pExportedOrbwalker->GetMode( OrbwalkerMode::Combo )->Enabled( ) )
+        {
+            if ( !Spinning(  ) )
+            {
+                if (Menu::Toggle->Enabled(  ))
+                {
+                    auto range = KatQ->IsReady(  ) ? KatQ->Range(  ) : KatE->Range(  );
+                    auto target = g_pExportedTargetSelector->GetTarget(range, true  );
+
+                    UseProtoBelt( range );
+                    UseQ( target );
+                    GapE( );
+                    UseE( target, range );
+                    UseW( target );
+                    UseR( target );
+                    UseIgnite( target );
+                }
+                else
+                {
+                    auto range = KatE->Range(  );
+                    auto target = g_pExportedTargetSelector->GetTarget(range, true  );
+                    
+                    UseProtoBelt( range );
+                    GapE( );
+                    UseE( target, range );
+                    UseQ( target );
+                    UseW( target );
+                    UseR( target );
+                    UseIgnite( target );
+                }
             }
         }
     }
 
-    void UseW( )
+    void Harass( )
+    {
+        if ( g_pExportedOrbwalker->GetMode( OrbwalkerMode::Harass )->Enabled( ) )
+        {
+            // - dont harass under turret
+            if ( !Utils->UnderEnemyTurret( ) )
+            {
+                if ( !Spinning(  ) )
+                {
+                    UseQ( g_pExportedTargetSelector->GetTarget(KatQ->Range(  ), true  ) );
+                    UseW( g_pExportedTargetSelector->GetTarget(KatW->Range(  ), true  ) );
+                }
+            }
+        }
+
+        if (g_pExportedOrbwalker->GetMode( OrbwalkerMode::LaneClear )->Enabled( ))
+        {
+            // - dont harass under turret
+            if ( !Utils->UnderEnemyTurret( ) )
+            {
+                if ( !Spinning(  ) )
+                {
+                    UseQ( g_pExportedTargetSelector->GetTarget(KatQ->Range(  ), true  ) );
+                    UseW( g_pExportedTargetSelector->GetTarget(KatW->Range(  ), true  ) );
+                }
+            }
+        }
+    }
+
+    void LastHit()
+    {
+        if ( g_pExportedOrbwalker->GetMode( OrbwalkerMode::LastHit )->Enabled( ) )
+        {
+            if ( Menu::UseQ->Enabled( ) && Menu::LastHitQ->Enabled( ) && KatQ->IsReady( ) )
+            {
+                for ( auto i : g_pExportedEntityManager->Minions( ) )
+                {
+                    if ( Utils->IsValidTarget( i, KatQ->Range(  ) ) && DaggerDmg( i ) >= i->Health( ) )
+                    {
+                        KatQ->Cast( i );
+                    }
+                }
+            }
+        }
+
+        if (g_pExportedOrbwalker->GetMode( OrbwalkerMode::LaneClear )->Enabled( ))
+        {
+            if ( Menu::UseQ->Enabled( ) && Menu::LastHitQ->Enabled( ) && KatQ->IsReady( ) )
+            {
+                for ( auto i : g_pExportedEntityManager->Minions( ) )
+                {
+                    if ( Utils->IsValidTarget( i, KatQ->Range(  ) ) && DaggerDmg( i ) >= i->Health( ) )
+                    {
+                        KatQ->Cast( i );
+                    }
+                }
+            }
+        }
+    }
+
+    void Flee( )
+    {
+        if (g_pExportedOrbwalker->GetMode( OrbwalkerMode::Flee )->Enabled(  ))
+        {
+            // - shunpo
+            if ( Menu::FleeE->Enabled(  ) && KatE->IsReady(  ) )
+            {
+                for ( auto t : ShunpoJumpList(  ) )
+                {
+                    auto pos = ShunpoPosition( t );
+                    if ( pos.IsValid( ) && GetPlayer( )->DistanceXZ( pos ) > KatW->Range( ) )
+                    {
+                        if ( GetPlayer( )->DistanceXZ( pos ) <= KatE->Range( ) && Cursor->DistanceXZ( pos ) <= KatW->Range( ) )
+                        {
+                            KatE->Cast( pos );
+                        }
+                    }
+                }
+            }
+
+            // - preparation
+            if ( KatW->IsReady( ) && Menu::FleeW->Enabled(  ) )
+            {
+                KatW->Cast( );
+            }
+        }
+    }
+
+    #pragma endregion
+    
+    // ░█▀▀░█▀█░█▄█░█▀▄░█▀█░▀█▀
+    // ░█░░░█░█░█░█░█▀▄░█▀█░░█░
+    // ░▀▀▀░▀▀▀░▀░▀░▀▀░░▀░▀░░▀░
+    #pragma region Combat
+    
+    void UseQ( GameObject* unit )
+    {
+        // - bounding blades
+        if ( KatQ->IsReady( ) && Menu::UseQ->Enabled( ) )
+        {
+            if ( unit != nullptr && Utils->IsValidTarget( unit, KatQ->Range(  ) ) )
+            {
+                KatQ->Cast( unit ) ;
+            }
+        }
+    }
+
+    void UseW( GameObject* unit )
     {
         // - preparation
         if ( KatW->IsReady( ) && Menu::UseW->Enabled( ) )
         {
-            auto target = g_pExportedTargetSelector->GetTarget( KatW->Range( ), true );
-            if ( target != nullptr && Utils::IsValidTarget( target ) )
+            if ( unit != nullptr && Utils->IsValidTarget( unit, KatW->Range(  ) ) )
             {
                 if ( !KatQ->IsReady( ) || !Menu::UseQ->Enabled(  ) )
                 {
@@ -458,23 +373,18 @@ namespace Katarina
             }
         }
     }
-
-    void UseE( float range )
+    
+    void UseE( GameObject* unit, float range )
     {
-        if ( ! KatQ->IsReady(  ) )
-            range = KatE->Range(  );
-        
         // - shunpo target
         if ( KatE->IsReady( ) && Menu::UseE->Enabled( ) )
         {
-            UseProtoBelt( range );
-            auto target = g_pExportedTargetSelector->GetTarget( range, true );
-            if ( target != nullptr && Utils::IsValidTarget( target ) )
+            if ( unit != nullptr && Utils->IsValidTarget( unit, range ) )
             {
-                const auto pos = ShunpoPosition( target );
-                if ( pos.IsValid( ) && ( !Utils::UnderEnemyTurret( pos ) || Menu::DiveE->Enabled( ) || CanPostExecute( target ) ) )
+                auto pos = ShunpoPosition( unit );
+                if ( pos.IsValid( ) && ( !Utils->UnderEnemyTurret( pos ) || Menu::DiveE->Enabled( ) || CanPostExecute( unit ) ) )
                 {
-                    if ( CanPostExecute( target ) || GetPlayer( )->DistanceXZ( pos ) > GetPlayer( )->CharacterIntermediate( )->AttackRange( ) + 125 )
+                    if ( CanPostExecute( unit ) || GetPlayer( )->DistanceXZ( pos ) > GetPlayer( )->CharacterIntermediate( )->AttackRange( ) + 15 )
                     {
                         KatE->Cast( pos );
                     }
@@ -483,39 +393,56 @@ namespace Katarina
         }
     }
 
-    void UseR( )
+    void UseR( GameObject* unit )
     {
         // - death lotus
         if ( KatR->IsReady( ) && Menu::UseR->Enabled( ) )
         {
-            auto target = g_pExportedTargetSelector->GetTarget( KatR->Range( ), true );
-            if ( target != nullptr && Utils::IsValidTarget( target ) )
+            // - check validity
+            if ( unit == nullptr || !Utils->IsValidTarget( unit, KatR->Range( ) ) )
+                return;
+
+            // - ult if killable or always
+            if ( Menu::UltMode->SelectedItem( ) == 1 && CanPreExecute( unit ) || Menu::UltMode->SelectedItem( ) == 0 )
             {
-                if ( Menu::UltMode->SelectedItem( ) == 0 || Menu::UltMode->SelectedItem( ) == 1 && CanPreExecute( target ) )
-                {
-                    if (KatW->IsReady(  ))
-                    {
-                        KatW->Cast();
-                    }
-                    else
-                    {
-                        KatR->Cast( );
-                    }
-                }
+                // - pre cast w (if available)
+                ( KatW->IsReady( ) ? KatW : KatR )->Cast( );
             }
         }
     }
 
-    void UseIgnite( )
+    void GapE( )
+    {
+        // - shunpo gap
+        if ( KatE->IsReady( ) && Menu::UseE->Enabled( ) )
+        {
+            auto unit = g_pExportedTargetSelector->GetTarget( KatE->Range(  ) *2, true );
+            if ( unit != nullptr  )
+            {
+                const auto pos = ShunpoPosition( unit, false );
+                if ( pos.IsValid( ) && ( !Utils->UnderEnemyTurret( pos ) || Menu::DiveE->Enabled( ) || CanPostExecute( unit ) ) )
+                {
+                    if ( GetPlayer( )->DistanceXZ( pos ) > KatW->Range(  ) )
+                    {
+                        if (pos.DistanceXZ( GetPlayer(  )->Position(  ) ) <= KatE->Range(  ))
+                        {
+                            KatE->Cast( pos );
+                        }
+                    }
+                }
+            }
+        }  
+    }
+    
+    void UseIgnite( GameObject* unit )
     {
         if ( Ignite != nullptr && Ignite->IsReady(  ) && Menu::UseIgnite->Enabled(  ))
         {
-            auto target = g_pExportedTargetSelector->GetTarget( KatR->Range( ), true );
-            if ( target != nullptr && Utils::IsValidTarget( target ) )
+            if ( unit != nullptr && Utils->IsValidTarget( unit, 600 ) )
             {
-                if ( CanPreExecute( target ) )
+                if ( CanPreExecute( unit ) )
                 {
-                    Ignite->Cast(target);
+                    Ignite->Cast( unit );
                 }
             }
         }
@@ -528,49 +455,196 @@ namespace Katarina
             auto pSlot = GetPlayer(  )->GetItemSlot( ItemID::HextechProtobelt01 );
             if ( GetPlayer(  )->Spellbook(  )->CanUseSpell( pSlot ) )
             {
-                auto target = g_pExportedTargetSelector->GetTarget( range + 275, true );
-                if ( target != nullptr && Utils::IsValidTarget( target ) )
+                auto unit = g_pExportedTargetSelector->GetTarget( range + 275 );
+                if ( unit != nullptr && Utils->IsValidTarget( unit, range + 275  ) )
                 {
-                    auto pos = target->Position(  );
+                    auto pos = unit->Position(  );
                     GetPlayer(  )->Spellbook(  )->SendSpellCastPacket( pSlot, &pos, &pos, nullptr);
                 }
             }
         }
     }
-
-    void Flee( )
+    
+#pragma endregion
+    
+    // ░█▀▄░█▀█░█▀▀░█▀▀░█▀▀░█▀▄░█▀▀
+    // ░█░█░█▀█░█░█░█░█░█▀▀░█▀▄░▀▀█
+    // ░▀▀░░▀░▀░▀▀▀░▀▀▀░▀▀▀░▀░▀░▀▀▀
+    #pragma region Daggers
+    
+    void OnCreateParticle( GameObject* pObject, std::uint32_t iHash )
     {
-        if ( !Menu::FleeE->Enabled(  ) || !KatE->IsReady(  ) )
-            return;
-        
-        auto jump_list = Vector<GameObject*>();
-        jump_list.clear(  );
-
-        for ( auto i : g_pExportedEntityManager->Heroes(  ) )
-            jump_list.push_back( i );
-
-        for ( auto i : g_pExportedEntityManager->Minions(  ) )
-            jump_list.push_back( i );
-
-        jump_list.sort( [&]( GameObject* a, GameObject* b )
-            { return a->DistanceXZ( *Cursor ) < b->DistanceXZ( *Cursor );  } );
-
-        for ( auto t : jump_list )
+        if ( pObject != nullptr )
+            if ( iHash == FNV1A32CI( "Katarina_Dagger_Ground_Indicator" ) )
+                Daggers.push_back( {.Obj = pObject, .Position = pObject->Position( ), .CreateTime = g_pExportedGlobalClocks->GameTime( ), } );
+    }
+    
+    void RenderDaggers()
+    {
+        for ( auto i : Daggers )
         {
-            auto pos = ShunpoPosition( t );
-            if ( pos.IsValid(  ) && GetPlayer(  )->DistanceXZ( pos ) > KatW->Range(  ))
+            if ( Menu::DrawDagger->Enabled( ) )
             {
-                if ( GetPlayer( )->DistanceXZ( pos ) <= KatE->Range( ) )
-                {
-                    if ( Cursor->DistanceXZ( pos ) <= KatW->Range( ) )
-                    {
-                        KatE->Cast( pos );
-                    }
-                }
+                Vector3 wts;
+                g_pExportedRenderer->WorldToScreen( i.Position, &wts );
+                double time = 5.0 - ( g_pExportedGlobalClocks->GameTime( ) - i.CreateTime );
+
+                char buffer[64];
+                Globals::Sprintf( buffer, "%2.f", time );
+
+                g_pExportedRenderer->GetCurrentDrawList( )->AddCircle( i.Position, KatW->Range( ), 4, RGBA( 0, 0, 0, 255 ) );
+                g_pExportedRenderer->GetCurrentDrawList( )->AddCircle( i.Position, KatW->Range( ), 2, RGBA( 204, 255, 51, 255 ) );
+                g_pExportedRenderer->GetCurrentDrawList( )->AddCircle( i.Position, KatW->Range( ) / 2 + 2, 2, RGBA( 0, 0, 0, 255 ) );
+                g_pExportedRenderer->GetCurrentDrawList( )->AddCircle( i.Position, KatW->Range( ) / 2, 2, RGBA( 204, 255, 51, 255 ) );
+                
+                g_pExportedRenderer->GetCurrentDrawList( )->AddTextA( nullptr, buffer, 75, wts.x + 1, wts.y + 1, RGBA( 0, 0, 0, 255 ) );
+                g_pExportedRenderer->GetCurrentDrawList( )->AddTextA( nullptr, buffer, 75, wts.x, wts.y, RGBA( 204, 255, 51, 255 ) );
             }
         }
     }
 
+    void RemoveDaggers( )
+    {
+        // - dagger handling
+        for ( auto it = Daggers.begin( ); it != Daggers.end( ); it++ )
+        {
+            const auto blade = it->Obj;
+
+            // - remove invalid? blades
+            if ( blade == nullptr || !blade->IsActive( ) || !blade->IsVisible( ) )
+            {
+                Daggers.erase( it );
+                break;
+            }
+
+            // - remove blades ive picked up
+            if ( blade->Position( ).DistanceXZ( GetPlayer( )->Position( ) ) <= KatW->Range( ) - 115 )
+            {
+                Daggers.erase( it );
+                break;
+            }
+
+            // - remove blade after 4 seconds
+            if ( g_pExportedGlobalClocks->GameTime( ) - it->CreateTime > 4.0f )
+            {
+                Daggers.erase( it );
+                break;
+            }
+        }
+    }
+    
+    #pragma endregion
+    
+    // ░█▄█░▀█▀░█▀▀░█▀▀
+    // ░█░█░░█░░▀▀█░█░░
+    // ░▀░▀░▀▀▀░▀▀▀░▀▀▀
+    #pragma region Misc
+    
+    Vector<GameObject*> ShunpoJumpList()
+    {
+        // create an empty vector to store the GameObject pointers.
+        auto jump_list = Vector<GameObject*>( );
+
+        // iterate through all hero entities in the game and add them to the jump_list.
+        for ( auto i : g_pExportedEntityManager->Heroes( ) )
+            jump_list.push_back( i );
+
+        // iterate through all hero entities in the game and add them to the jump_list.
+        for ( auto i : g_pExportedEntityManager->Minions( ) )
+            jump_list.push_back( i );
+        
+        // sort the jump_list based on the distance from each GameObject to the Cursor's position.
+        jump_list.sort( [&]( GameObject* a, GameObject* b ) { return a->DistanceXZ( *Cursor ) < b->DistanceXZ( *Cursor ); } );
+
+        // return the sorted jump_list.
+        return jump_list;
+    }
+
+    Vector3 ShunpoPosition( GameObject* pObject, bool hero )
+    {
+        if ( pObject == nullptr )
+        {
+            return {};
+        }
+        
+        for ( auto& d : Daggers )
+        {
+            auto blade = d.Obj;
+
+            if ( pObject->Position(  ).DistanceXZ( blade->Position(  ) ) <= KatW->Range( ) + pObject->BoundingRadius( ) )
+            {
+                if ( blade->Position(  ).DistanceXZ( GetPlayer( )->Position(  ) ) <= KatE->Range( ) + KatW->Range( ) )
+                {
+                    if ( CanPostExecute( pObject ) || blade->Position(  ).DistanceXZ( GetPlayer( )->Position(  ) ) > KatW->Range( ) - 115 )
+                    {
+                        Globals::Write( "Shunpo Position: Blade1\n" );
+                        return blade->Position( );
+                    }
+                }
+            }
+
+            if ( pObject->Position(  ).DistanceXZ( blade->Position(  ) ) <= KatE->Range( ) + pObject->BoundingRadius( ) )
+            {
+                if ( blade->Position(  ).DistanceXZ( GetPlayer( )->Position(  ) ) <= KatE->Range( ) + KatW->Range( ) )
+                {
+                    if ( CanPostExecute( pObject ) || blade->Position(  ).DistanceXZ( GetPlayer( )->Position(  ) ) > KatW->Range( ) + 115)
+                    {
+                        Globals::Write( "Shunpo Position: Blade2\n" );
+                        return blade->Position( );
+                    }
+                }
+            }
+        }
+        
+        Vector3 pos = { };
+        
+        if (hero)
+        {
+            switch ( Menu::ShunpoMode->SelectedItem( ) )
+            {
+                case 0:
+                    pos = pObject->Position( ) + ( GetPlayer( )->Position( ) - pObject->Position( ) ).NormalizeXZ( ) * 135;
+                    break;
+                case 1:
+                    pos = pObject->Position( ) + ( GetPlayer( )->Position( ) - pObject->Position( ) ).NormalizeXZ( ) * -135;
+                    break;
+                case 2:
+                    auto pred = g_pExportedPrediction->CalculateIntercept( pObject, { .m_flDelay = g_pExportedNetClient->RoundTripLatency( ) / 1000 } );
+                    auto walk_to = pObject->Position( ).Extend( pred, 100 );
+                    auto reverse = pObject->Position( ) + ( walk_to - pObject->Position( ) ).NormalizeXZ( ) * -135;
+                    pos = reverse;
+                    break;
+            }
+        }
+        
+        return pos;
+    }
+
+    float DynamicRange( )
+    {
+        if ( !KatE->IsReady( ) )
+        {
+            if ( g_pExportedGlobalClocks->GameTime( ) - KatE->LastCastTime( ) < 0.5 )
+            {
+                return KatW->Range( );
+            }
+        }
+        
+        return KatQ->Range(  );
+    }
+
+    bool Spinning( )
+    {
+        return GetPlayer( )->HasBuff( FNV1A32CI( "katarinarsound" ) );
+    }
+    
+    #pragma endregion
+    
+    // ░█▀▄░█▀█░█▄█░█▀█░█▀▀░█▀▀
+    // ░█░█░█▀█░█░█░█▀█░█░█░█▀▀
+    // ░▀▀░░▀░▀░▀░▀░▀░▀░▀▀▀░▀▀▀
+    #pragma region Damage
+    
     float UltDmg( GameObject* pObject, float time )
     {
         auto p_dmg = 0;
@@ -595,7 +669,6 @@ namespace Katarina
         // calculate the damage for each dagger
         for ( int i = 0; i < num_daggers; i++ )
         {
-            //double physical_damage = bonus_ad * (1.0 + 0.5 * bonus_as);
             double physical_damage = base_phys_damage * ( bonus_ad * ( 1.0 + bonus_as * 0.5 ) );
             double magic_damage = base_magic_damage[GetPlayer( )->Spellbook( )->GetSpell( R )->Level( ) - 1] + total_ap * ap_scaling;
             auto efx = on_hit_effectiveness[GetPlayer( )->Spellbook( )->GetSpell( R )->Level( ) - 1];
@@ -692,4 +765,73 @@ namespace Katarina
 
         return g_pExportedDamage->CalculateMagicDamage( GetPlayer( ), pObject, magic_damage ).m_flTotal;
     }
+    
+#pragma endregion
+    
+    // ░█▄█░█▀▀░█▀█░█░█
+    // ░█░█░█▀▀░█░█░█░█
+    // ░▀░▀░▀▀▀░▀░▀░▀▀▀
+    #pragma region Menu
+    
+    void SetupMenu( )
+    {
+        Menu::Root = g_pExportedMenu->AddMenu("EzSeries", MenuConfig("EzSeries"));
+        Menu::Root->AddSeparator( MenuString( "Katarina" ) );
+        Menu::Debug = Menu::Root->AddCheckbox( MenuString( "Debug" ), MenuConfig( "Debug" ), false );
+
+        const auto q_menu = Menu::Root->AddMenu( MenuString( "Bouncing Blade (Q)" ), MenuConfig( "BouncingBlade" ) );
+        Menu::UseQ = q_menu->AddCheckbox( MenuString( "Use Bouncing Blade (Q)" ), MenuConfig( "katarina.use.q" ), true );
+        Menu::LastHitQ = q_menu->AddCheckbox( MenuString( "- Last Hit" ), MenuConfig( "katarina.last.hit.q" ), true );
+        Menu::DaggerCalc = q_menu->AddSlider( MenuString( "- Daggers (Dmg Calc)" ), MenuConfig( "katarina.q.daggers" ), 0, 3, 2, 0, 1 );
+        Menu::DaggerCalc->SetTooltipName( TooltipString( "Calculates as if # daggers near target." ) );
+        Menu::DrawDagger = q_menu->AddCheckbox( MenuString( "- Draw Dagger Lifetime" ), MenuConfig( "katarina.dagger.life" ), true );
+        Menu::DrawQ = q_menu->AddCheckbox( MenuString( "- Draw Range" ), MenuConfig( "katarina.q.draw" ), true );
+
+        const auto w_menu = Menu::Root->AddMenu( MenuString( "Preparation (W)" ), MenuConfig( "Preparation" ) );
+        Menu::UseW = w_menu->AddCheckbox( MenuString( "Use Preparation (W)" ), MenuConfig( "katarina.use.w" ), true );
+        Menu::FleeW = w_menu->AddCheckbox( MenuString( "- Flee" ), MenuConfig( "katarina.use.w.flee" ), true );
+
+        const auto e_menu = Menu::Root->AddMenu( MenuString( "Shunpo (E)" ), MenuConfig( "Shunpo" ) );
+        Menu::UseE = e_menu->AddCheckbox( MenuString( "Use Shunpo (E)" ), MenuConfig( "katarina.use.e" ), true );
+        Menu::FleeE = e_menu->AddCheckbox( MenuString( "- Flee" ), MenuConfig( "katarina.use.e.flee" ), true );
+        Menu::FleeE->SetTooltipName( TooltipString( "Soon" ) );
+        
+        Vector<CompileTimeString<char, 64>> shunpo_mode_items;
+        shunpo_mode_items.push_back( MenuString( "Front" ) );
+        shunpo_mode_items.push_back( MenuString( "Behind" ) );
+        shunpo_mode_items.push_back( MenuString( "Auto (Beta)" ) );
+        Menu::ShunpoMode = e_menu->AddDropdown( MenuString( "- Position:" ), MenuConfig( "katarina.e.where" ), shunpo_mode_items, 0 );
+
+        Menu::DiveE = e_menu->AddKeybind( MenuString( "- Turret Dive" ), MenuConfig( "katarina.dive.e" ), 'T', true, true );
+        Menu::DrawE = e_menu->AddCheckbox( MenuString( "- Draw Range" ), MenuConfig( "katarina.e.draw" ), true );
+
+        const auto r_menu = Menu::Root->AddMenu( MenuString( "Death Lotus (R)" ), MenuConfig( "DeathLotus" ) );
+        Menu::UseR = r_menu->AddCheckbox( MenuString( "Use Death Lotus (R)" ), MenuConfig( "katarina.use.r" ), true );
+
+        Vector<CompileTimeString<char, 64>> ult_mode_items;
+        ult_mode_items.push_back( MenuString( "Always" ) );
+        ult_mode_items.push_back( MenuString( "Killable" ) );
+        Menu::UltMode = r_menu->AddDropdown( MenuString( "- Use When:" ), MenuConfig( "katarina.r.when" ), ult_mode_items, 0 );
+
+        Menu::AutoR = r_menu->AddSlider( MenuString( "- Auto use if # in Range" ), MenuConfig( "katarina.auto.r" ), 1, 6, 3, 0, 1 );
+        Menu::Channel = r_menu->AddSlider( MenuString( "- Channel Time (Dmg Calc)" ), MenuConfig( "katarina.r.channel" ), 0.0, 2.5, 2.0, 1, .1 );
+        Menu::Cancel = r_menu->AddCheckbox( MenuString( "- Cancel if None in Range" ), MenuConfig( "katarina.use.r.cancel" ), true );
+        Menu::DrawR = r_menu->AddCheckbox( MenuString( "- Draw Range" ), MenuConfig( "katarina.r.draw" ), true );
+
+        Menu::Root->AddSeparator( MenuString( "Mechanics" ) );
+        Menu::UseIgnite = Menu::Root->AddCheckbox( MenuString( "Use Ignite" ), MenuConfig( "katarina.use.ignite" ), true );
+        Menu::UseItems = Menu::Root->AddCheckbox( MenuString( "Use Rocketbelt" ), MenuConfig( "katarina.use.items" ), true );
+        //Menu::Killsteal = Menu::Root->AddCheckbox( MenuString( "Killsteal" ), MenuConfig( "katarina.ks" ), false );
+        //Menu::Killsteal->SetTooltipName( TooltipString( "Soon" ) );
+        
+        Vector<CompileTimeString<char, 64>> spell_priority;
+        spell_priority.push_back( MenuString( "E -> Q" ) );
+        spell_priority.push_back( MenuString( "Q -> E" ) );
+        Menu::Toggle = Menu::Root->AddKeybind( MenuString( "Combo Toggle" ), MenuConfig( "katarina.toggle" ), 'X', true );
+        Menu::DrawHPBar = Menu::Root->AddCheckbox( MenuString( "HPBarFill Draw" ), MenuConfig( "katarina.r.draw.hp" ), true );
+        
+        Menu::Root->AddSeparator( MenuString( "EzSeries v0.52" ) );
+    }
+
+#pragma endregion
 }
