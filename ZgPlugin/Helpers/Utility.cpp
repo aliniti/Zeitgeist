@@ -1,11 +1,11 @@
 #include "../stdafx.hpp"
 
-auto Utils::Get( uint16_t handle ) -> GameObject*
+auto Utility::Get( uint16_t handle ) -> GameObject*
 {
     return g_pExportedObjectManager->GetObjectByHandle( handle );
 }
 
-auto Utils::IsValidTarget( GameObject* pObject, float range ) -> bool
+auto Utility::IsValidTarget( GameObject* pObject, float range ) -> bool
 {
     if ( pObject == nullptr || !pObject->IsAttackable( true, false ) )
     {
@@ -15,7 +15,7 @@ auto Utils::IsValidTarget( GameObject* pObject, float range ) -> bool
     return GetPlayer( )->DistanceXZ( pObject ) <= range;
 }
 
-auto Utils::IsOnSegment(Vector3 pos, Vector3 start, Vector3 end, float radius ) -> bool
+auto Utility::IsOnSegment(Vector3 pos, Vector3 start, Vector3 end, float radius ) -> bool
 {
     Vector3 segment;
     if (g_pExportedMath->IsOnSegment( pos, start, end, segment ))
@@ -29,7 +29,7 @@ auto Utils::IsOnSegment(Vector3 pos, Vector3 start, Vector3 end, float radius ) 
     return false;
 }
 
-auto Utils::UnderEnemyTurret( ) -> bool
+auto Utility::UnderEnemyTurret( ) -> bool
 {
     int turrets = 0;
 
@@ -47,7 +47,7 @@ auto Utils::UnderEnemyTurret( ) -> bool
     return turrets > 0;
 }
 
-auto Utils::UnderEnemyTurret( Vector3 pos ) -> bool
+auto Utility::UnderEnemyTurret( Vector3 pos ) -> bool
 {
     int turrets = 0;
 
@@ -65,7 +65,7 @@ auto Utils::UnderEnemyTurret( Vector3 pos ) -> bool
     return turrets > 0;
 }
 
-auto Utils::UnderEnemyTurret( GameObject* unit ) -> bool
+auto Utility::UnderEnemyTurret( GameObject* unit ) -> bool
 {
     int turrets = 0;
 
@@ -83,7 +83,7 @@ auto Utils::UnderEnemyTurret( GameObject* unit ) -> bool
     return turrets > 0;
 }
 
-auto Utils::CountEnemiesInRange( GameObject* pObject, float range ) -> int
+auto Utility::CountEnemiesInRange( GameObject* pObject, float range ) -> int
 {
     int units = 0;
 

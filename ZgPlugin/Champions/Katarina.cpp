@@ -23,8 +23,7 @@ namespace Katarina
         if (GetPlayer(  )->Spellbook(  )->GetSpell( Summoner2 )->SpellData(  )->Hash(  ) == FNV1A32CI("SummonerDot"))
             Ignite = new Spell ( Summoner2, 600);
 
-        if ( Menu::Debug->Enabled(  ) )
-            Globals::Write( "Katarina Loaded!\n" );
+        Cursor = g_pExportedHudManager->CursorPositionUnclipped(  );
     }
 
     void OnTerminate( )
@@ -47,14 +46,14 @@ namespace Katarina
             if ( Menu::DrawQ->Enabled( ) && GetPlayer( )->Spellbook( )->GetSpell( Q )->Level( ) > 0 )
             {
                 g_pExportedRenderer->GetCurrentDrawList( )->AddCircle( GetPlayer( )->Position( ), KatQ->Range( ), 6, RGBA( 0, 0, 0, q_opacity ) );
-                g_pExportedRenderer->GetCurrentDrawList( )->AddCircle( GetPlayer( )->Position( ), KatQ->Range( ), 3, RGBA( 204, 255, 51, q_opacity ) );
+                g_pExportedRenderer->GetCurrentDrawList( )->AddCircle( GetPlayer( )->Position( ), KatQ->Range( ), 3, RGBA( 255, 20, 255, q_opacity ) );
             }
 
             const auto e_opacity = GetPlayer( )->Spellbook( )->CanUseSpell( E ) ? 255 : 25;
             if ( Menu::DrawE->Enabled( ) && GetPlayer( )->Spellbook( )->GetSpell( E )->Level( ) > 0 )
             {
                 g_pExportedRenderer->GetCurrentDrawList( )->AddCircle( GetPlayer( )->Position( ), KatE->Range( ), 6, RGBA( 0, 0, 0, e_opacity ) );
-                g_pExportedRenderer->GetCurrentDrawList( )->AddCircle( GetPlayer( )->Position( ), KatE->Range( ), 3, RGBA( 204, 255, 51, e_opacity ) );
+                g_pExportedRenderer->GetCurrentDrawList( )->AddCircle( GetPlayer( )->Position( ), KatE->Range( ), 3, RGBA( 255, 20, 255, e_opacity ) );
             }
 
             const auto r_opacity = GetPlayer( )->Spellbook( )->CanUseSpell( R ) ? 255 : 25;
@@ -85,14 +84,14 @@ namespace Katarina
                 Vector3 wts;
                 g_pExportedRenderer->WorldToScreen( GetPlayer( )->Position( ), &wts );
                 g_pExportedRenderer->GetCurrentDrawList( )->AddTextA( nullptr, "Combo: Q->E", 15, wts.x - 40 + 1, wts.y + 1, RGBA( 0, 0, 0, 255 ) );
-                g_pExportedRenderer->GetCurrentDrawList( )->AddTextA( nullptr, "Combo: Q->E", 15, wts.x - 40, wts.y, RGBA( 204, 255, 51, 255 ) );
+                g_pExportedRenderer->GetCurrentDrawList( )->AddTextA( nullptr, "Combo: Q->E", 15, wts.x - 40, wts.y, RGBA( 255, 20, 255, 255 ) );
             }
             else
             {
                 Vector3 wts;
                 g_pExportedRenderer->WorldToScreen( GetPlayer( )->Position( ), &wts );
                 g_pExportedRenderer->GetCurrentDrawList( )->AddTextA( nullptr, "Combo: E->Q", 15, wts.x - 40 + 1, wts.y + 1, RGBA( 0, 0, 0, 255 ) );
-                g_pExportedRenderer->GetCurrentDrawList( )->AddTextA( nullptr, "Combo: E->Q", 15, wts.x - 40, wts.y, RGBA( 204, 255, 51, 255 ) );
+                g_pExportedRenderer->GetCurrentDrawList( )->AddTextA( nullptr, "Combo: E->Q", 15, wts.x - 40, wts.y, RGBA( 255, 20, 255, 255 ) );
             }
         }
     }
@@ -124,9 +123,6 @@ namespace Katarina
                         UseQ( target );
                     }
                 }
-
-                if (Menu::Debug->Enabled(  ))
-                    Globals::Write( "Cancel: Execute!\n" );
             }
 
             if ( Utils->CountEnemiesInRange( GetPlayer( ), 500 ) < 1 && Menu::Cancel->Enabled( ) )
@@ -135,8 +131,6 @@ namespace Katarina
                 auto new_pos = GetPlayer(  )->Position(  ).Extend( *pos, GetPlayer(  )->BoundingRadius(  ) + 400);
                 GetPlayer( )->IssueMoveOrder( &new_pos, false, false, true, true, &Limiter );
                 
-                if (Menu::Debug->Enabled(  ))
-                    Globals::Write( "Cancel: None in Range!\n" );
             }
         }
     }
@@ -493,12 +487,12 @@ namespace Katarina
                 Globals::Sprintf( buffer, "%2.f", time );
 
                 g_pExportedRenderer->GetCurrentDrawList( )->AddCircle( i.Position, KatW->Range( ), 4, RGBA( 0, 0, 0, 255 ) );
-                g_pExportedRenderer->GetCurrentDrawList( )->AddCircle( i.Position, KatW->Range( ), 2, RGBA( 204, 255, 51, 255 ) );
+                g_pExportedRenderer->GetCurrentDrawList( )->AddCircle( i.Position, KatW->Range( ), 2, RGBA( 255, 20, 255, 255 ) );
                 g_pExportedRenderer->GetCurrentDrawList( )->AddCircle( i.Position, KatW->Range( ) / 2 + 2, 2, RGBA( 0, 0, 0, 255 ) );
-                g_pExportedRenderer->GetCurrentDrawList( )->AddCircle( i.Position, KatW->Range( ) / 2, 2, RGBA( 204, 255, 51, 255 ) );
+                g_pExportedRenderer->GetCurrentDrawList( )->AddCircle( i.Position, KatW->Range( ) / 2, 2, RGBA( 255, 20, 255, 255 ) );
                 
                 g_pExportedRenderer->GetCurrentDrawList( )->AddTextA( nullptr, buffer, 75, wts.x + 1, wts.y + 1, RGBA( 0, 0, 0, 255 ) );
-                g_pExportedRenderer->GetCurrentDrawList( )->AddTextA( nullptr, buffer, 75, wts.x, wts.y, RGBA( 204, 255, 51, 255 ) );
+                g_pExportedRenderer->GetCurrentDrawList( )->AddTextA( nullptr, buffer, 75, wts.x, wts.y, RGBA( 255, 20, 255, 255 ) );
             }
         }
     }
@@ -532,8 +526,10 @@ namespace Katarina
             }
         }
     }
-    
-    #pragma endregion
+
+ 
+
+#pragma endregion
     
     // ░█▄█░▀█▀░█▀▀░█▀▀
     // ░█░█░░█░░▀▀█░█░░
@@ -559,7 +555,7 @@ namespace Katarina
         // return the sorted jump_list.
         return jump_list;
     }
-
+    
     Vector3 ShunpoPosition( GameObject* pObject, bool hero )
     {
         if ( pObject == nullptr )
@@ -577,7 +573,6 @@ namespace Katarina
                 {
                     if ( CanPostExecute( pObject ) || blade->Position(  ).DistanceXZ( GetPlayer( )->Position(  ) ) > KatW->Range( ) - 115 )
                     {
-                        Globals::Write( "Shunpo Position: Blade1\n" );
                         return blade->Position( );
                     }
                 }
@@ -589,7 +584,6 @@ namespace Katarina
                 {
                     if ( CanPostExecute( pObject ) || blade->Position(  ).DistanceXZ( GetPlayer( )->Position(  ) ) > KatW->Range( ) + 115)
                     {
-                        Globals::Write( "Shunpo Position: Blade2\n" );
                         return blade->Position( );
                     }
                 }
@@ -775,26 +769,24 @@ namespace Katarina
     
     void SetupMenu( )
     {
-        Menu::Root = g_pExportedMenu->AddMenu("EzSeries", MenuConfig("EzSeries"));
-        Menu::Root->AddSeparator( MenuString( "Katarina" ) );
-        Menu::Debug = Menu::Root->AddCheckbox( MenuString( "Debug" ), MenuConfig( "Debug" ), false );
-
-        const auto q_menu = Menu::Root->AddMenu( MenuString( "Bouncing Blade (Q)" ), MenuConfig( "BouncingBlade" ) );
-        Menu::UseQ = q_menu->AddCheckbox( MenuString( "Use Bouncing Blade (Q)" ), MenuConfig( "katarina.use.q" ), true );
+        Menu::Root = g_pExportedMenu->AddMenu("EzSeries - Katarina", MenuConfig("EzSeries"));
+        Menu::Root->AddSeparator( MenuString( "Spells" ) );
+        
+        const auto q_menu = Menu::Root->AddMenu( MenuString( "(Q) Bouncing Blade" ), MenuConfig( "BouncingBlade" ) );
+        Menu::UseQ = q_menu->AddCheckbox( MenuString( "Use (Q)" ), MenuConfig( "katarina.use.q" ), true );
         Menu::LastHitQ = q_menu->AddCheckbox( MenuString( "- Last Hit" ), MenuConfig( "katarina.last.hit.q" ), true );
         Menu::DaggerCalc = q_menu->AddSlider( MenuString( "- Daggers (Dmg Calc)" ), MenuConfig( "katarina.q.daggers" ), 0, 3, 2, 0, 1 );
         Menu::DaggerCalc->SetTooltipName( TooltipString( "Calculates as if # daggers near target." ) );
         Menu::DrawDagger = q_menu->AddCheckbox( MenuString( "- Draw Dagger Lifetime" ), MenuConfig( "katarina.dagger.life" ), true );
         Menu::DrawQ = q_menu->AddCheckbox( MenuString( "- Draw Range" ), MenuConfig( "katarina.q.draw" ), true );
 
-        const auto w_menu = Menu::Root->AddMenu( MenuString( "Preparation (W)" ), MenuConfig( "Preparation" ) );
-        Menu::UseW = w_menu->AddCheckbox( MenuString( "Use Preparation (W)" ), MenuConfig( "katarina.use.w" ), true );
+        const auto w_menu = Menu::Root->AddMenu( MenuString( "(W) Preparation" ), MenuConfig( "Preparation" ) );
+        Menu::UseW = w_menu->AddCheckbox( MenuString( "Use (W)" ), MenuConfig( "katarina.use.w" ), true );
         Menu::FleeW = w_menu->AddCheckbox( MenuString( "- Flee" ), MenuConfig( "katarina.use.w.flee" ), true );
 
-        const auto e_menu = Menu::Root->AddMenu( MenuString( "Shunpo (E)" ), MenuConfig( "Shunpo" ) );
-        Menu::UseE = e_menu->AddCheckbox( MenuString( "Use Shunpo (E)" ), MenuConfig( "katarina.use.e" ), true );
+        const auto e_menu = Menu::Root->AddMenu( MenuString( "(E) Shunpo" ), MenuConfig( "Shunpo" ) );
+        Menu::UseE = e_menu->AddCheckbox( MenuString( "Use (E)" ), MenuConfig( "katarina.use.e" ), true );
         Menu::FleeE = e_menu->AddCheckbox( MenuString( "- Flee" ), MenuConfig( "katarina.use.e.flee" ), true );
-        Menu::FleeE->SetTooltipName( TooltipString( "Soon" ) );
         
         Vector<CompileTimeString<char, 64>> shunpo_mode_items;
         shunpo_mode_items.push_back( MenuString( "Front" ) );
@@ -805,8 +797,8 @@ namespace Katarina
         Menu::DiveE = e_menu->AddKeybind( MenuString( "- Turret Dive" ), MenuConfig( "katarina.dive.e" ), 'T', true, true );
         Menu::DrawE = e_menu->AddCheckbox( MenuString( "- Draw Range" ), MenuConfig( "katarina.e.draw" ), true );
 
-        const auto r_menu = Menu::Root->AddMenu( MenuString( "Death Lotus (R)" ), MenuConfig( "DeathLotus" ) );
-        Menu::UseR = r_menu->AddCheckbox( MenuString( "Use Death Lotus (R)" ), MenuConfig( "katarina.use.r" ), true );
+        const auto r_menu = Menu::Root->AddMenu( MenuString( "(R) Death Lotus" ), MenuConfig( "DeathLotus" ) );
+        Menu::UseR = r_menu->AddCheckbox( MenuString( "Use (R)" ), MenuConfig( "katarina.use.r" ), true );
 
         Vector<CompileTimeString<char, 64>> ult_mode_items;
         ult_mode_items.push_back( MenuString( "Always" ) );
@@ -818,7 +810,7 @@ namespace Katarina
         Menu::Cancel = r_menu->AddCheckbox( MenuString( "- Cancel if None in Range" ), MenuConfig( "katarina.use.r.cancel" ), true );
         Menu::DrawR = r_menu->AddCheckbox( MenuString( "- Draw Range" ), MenuConfig( "katarina.r.draw" ), true );
 
-        Menu::Root->AddSeparator( MenuString( "Mechanics" ) );
+        Menu::Root->AddSeparator( MenuString( "Misc" ) );
         Menu::UseIgnite = Menu::Root->AddCheckbox( MenuString( "Use Ignite" ), MenuConfig( "katarina.use.ignite" ), true );
         Menu::UseItems = Menu::Root->AddCheckbox( MenuString( "Use Rocketbelt" ), MenuConfig( "katarina.use.items" ), true );
         //Menu::Killsteal = Menu::Root->AddCheckbox( MenuString( "Killsteal" ), MenuConfig( "katarina.ks" ), false );
@@ -830,7 +822,7 @@ namespace Katarina
         Menu::Toggle = Menu::Root->AddKeybind( MenuString( "Combo Toggle" ), MenuConfig( "katarina.toggle" ), 'X', true );
         Menu::DrawHPBar = Menu::Root->AddCheckbox( MenuString( "HPBarFill Draw" ), MenuConfig( "katarina.r.draw.hp" ), true );
         
-        Menu::Root->AddSeparator( MenuString( "EzSeries v0.52" ) );
+        Menu::Root->AddSeparator( MenuString( "EzSeries v0.54" ) );
     }
 
 #pragma endregion

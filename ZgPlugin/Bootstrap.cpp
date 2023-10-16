@@ -21,6 +21,8 @@ void OnDraw( )
     {
         case SDBM32CI( "Katarina" ):
             return Katarina::OnDraw( );
+        case SDBM32CI( "Vex" ):
+            return Vex::OnDraw( );
         default: ;
     }
 }
@@ -31,7 +33,10 @@ void OnPresentDraw( )
     {
         case SDBM32CI( "Katarina" ):
             return Katarina::OnPresentDraw( );
-            default: ;
+
+        case SDBM32CI( "Vex" ):
+            return Vex::OnPresentDraw( );
+        default: ;
     }
 }
 
@@ -41,6 +46,8 @@ void OnUpdate( )
     {
         case SDBM32CI( "Katarina" ):
             return Katarina::OnUpdate( );
+        case SDBM32CI( "Vex" ):
+            return Vex::OnUpdate( );       
         default: ;
     }
 }
@@ -51,6 +58,8 @@ void OnBootPlugin( )
     {
         case SDBM32CI( "Katarina" ):
             return Katarina::OnBoot( );
+        case SDBM32CI( "Vex" ):
+            return Vex::OnBoot( );       
         default: ;
     }
 }
@@ -61,6 +70,8 @@ void OnTerminatePlugin( )
     {
         case SDBM32CI( "Katarina" ):
             return Katarina::OnTerminate( );
+        case SDBM32CI( "Vex" ):
+            return Vex::OnTerminate( );       
         default: ;
     }
 }

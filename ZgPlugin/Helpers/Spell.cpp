@@ -1,5 +1,12 @@
 #include "../stdafx.hpp"
 
+Spell::Spell( SpellSlot slot )
+{
+    this->slot = slot;
+    this->time = 0;
+    this->from = GetPlayer(  )->Position(  );
+}
+
 Spell::Spell( SpellSlot slot, float range )
 {
     this->slot = slot;
@@ -8,13 +15,13 @@ Spell::Spell( SpellSlot slot, float range )
     this->from = GetPlayer(  )->Position(  );
 }
 
-void Spell::SetSkillShot( float delay, float speed, float radius, bool hitbox, PredictionCollisionFlags collision )
+void Spell::SetSkillShot( float delay, float speed, float radius, bool hitbox, PredictionCollisionFlags flags )
 {
     this->delay = delay;
     this->speed = speed;
     this->radius = radius;
     this->hitbox = hitbox;
-    this->collision = collision;
+    this->flags = flags;
 }
 
 float Spell::Range( ) const
@@ -56,47 +63,47 @@ bool Spell::IsReady( const float t ) const
 
 void Spell::Cast( )
 {
-    if ( g_pExportedGlobalClocks->GameTime( ) - this->time > .25f )
+    if ( g_pExportedGlobalClocks->GameTime( ) - this->time <= .25f )
+        return;
+    
+    const auto player = GetPlayer( );
+    if ( const auto spellbook = player->Spellbook( ) )
     {
-        const auto player = GetPlayer( );
-        if ( const auto spellbook = player->Spellbook( ) )
+        auto position = player->Position( );
+        if ( spellbook->SendSpellCastPacket( this->slot, &position, &position, nullptr ) )
         {
-            auto position = player->Position( );
-            if ( spellbook->SendSpellCastPacket( this->slot, &position, &position, nullptr ) )
-            {
-                this->time = g_pExportedGlobalClocks->GameTime( );
-            }
+            this->time = g_pExportedGlobalClocks->GameTime( );
         }
     }
 }
 
 void Spell::Cast( GameObject* target )
 {
-    if ( g_pExportedGlobalClocks->GameTime( ) - this->time > .25f )
+    if ( g_pExportedGlobalClocks->GameTime( ) - this->time <= .25f )
+        return;
+    
+    const auto player = GetPlayer( );
+    if ( const auto spellbook = player->Spellbook( ) )
     {
-        const auto player = GetPlayer( );
-        if ( const auto spellbook = player->Spellbook( ) )
+        auto position = target->Position( );
+        if ( spellbook->SendSpellCastPacket( this->slot, &position, &position, target ) )
         {
-            auto position = target->Position( );
-            if ( spellbook->SendSpellCastPacket( this->slot, &position, &position, target ) )
-            {
-                this->time = g_pExportedGlobalClocks->GameTime( );
-            }
+            this->time = g_pExportedGlobalClocks->GameTime( );
         }
     }
 }
 
 void Spell::Cast( Vector3 position )
 {
-    if ( g_pExportedGlobalClocks->GameTime( ) - this->time > .25f )
+    if ( g_pExportedGlobalClocks->GameTime( ) - this->time <= .25f )
+        return;
+    
+    const auto player = GetPlayer( );
+    if ( const auto spellbook = player->Spellbook( ) )
     {
-        const auto player = GetPlayer( );
-        if ( const auto spellbook = player->Spellbook( ) )
+        if ( spellbook->SendSpellCastPacket( this->slot, &position, &position, nullptr ) )
         {
-            if ( spellbook->SendSpellCastPacket( this->slot, &position, &position, nullptr ) )
-            {
-                this->time = g_pExportedGlobalClocks->GameTime( );
-            }
+            this->time = g_pExportedGlobalClocks->GameTime( );
         }
     }
 }
@@ -106,46 +113,27 @@ void Spell::SetFrom( Vector3 pos )
     this->from = pos;
 }
 
-bool Spell::RunPrediction( GameObject* pObject, PredictionOutput & output ) const
+auto Spell::SetRange( float range ) -> void
 {
-    if ( !pObject ) return false;
-
-    const PredictionInput input
-    {
-        .m_pSource = nullptr,
-        .m_vecSourcePosition = this->from,
-        .m_bHitBox = this->hitbox,
-        .m_flRange = this->range,
-        .m_flDelay = this->delay,
-        .m_flRadius = this->radius,
-        .m_flSpeed = this->speed,
-        .m_iFlags = this->collision,
-    };
-    
-    return g_pExportedPrediction->GetPrediction(pObject, input, output);
+    this->range = range;
 }
 
-PredictionOutput Spell::RunPrediction( GameObject* pObject ) const
+void Spell::RunPrediction( GameObject* pObject, PredictionOutput & output ) const
 {
-    PredictionOutput output;
-    if ( !pObject ) return output;
-    
-    PredictionInput input
+    if ( pObject )
     {
-        .m_pSource = pObject,
-        .m_vecSourcePosition = pObject->Position(  ),
-        .m_bHitBox = this->hitbox,
-        .m_flRange = this->range,
-        .m_flDelay = this->delay,
-        .m_flRadius = this->radius,
-        .m_flSpeed = this->speed,
-        .m_iFlags = this->collision,
-    };
+        const PredictionInput input
+        {
+            .m_pSource = GetPlayer( ),
+            .m_vecSourcePosition = this->from,
+            .m_bHitBox = this->hitbox,
+            .m_flRange = this->range,
+            .m_flDelay = this->delay,
+            .m_flRadius = this->radius,
+            .m_flSpeed = this->speed,
+            .m_iFlags = this->flags,
+        };
 
-    if (g_pExportedPrediction->GetPrediction(pObject, input, output))
-    {
-        return output;
+        g_pExportedPrediction->GetPrediction( pObject, input, output );
     }
-    
-    return {};
 }

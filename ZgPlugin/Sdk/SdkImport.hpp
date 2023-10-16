@@ -1007,7 +1007,7 @@ namespace Zeitgeist::SdkImport {
 
 	enum struct PredictionReturnReason : std::int32_t {
 		Unknown = 0,
-		Statis,
+		Stasis,
 		Immobile,
 		WindingUp,
 		Channeling,
@@ -1016,7 +1016,9 @@ namespace Zeitgeist::SdkImport {
 		StandingStill,
 		Dashing,
 		Walking,
-		ShortPath
+		ShortPath,
+		Revive,
+		WindingUpUncancellable
 	};
 
 	enum struct PredictionCollisionFlags : std::uint32_t {

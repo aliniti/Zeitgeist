@@ -53,19 +53,17 @@ namespace Katarina
     void SetupMenu( );
     
     [[clang::no_destroy]] inline Vector<Dagger> Daggers;
-    [[clang::no_destroy]] inline Vector<GameObject*> JumpList;
     
     inline Spell* KatQ = nullptr;
     inline Spell* KatW = nullptr;
     inline Spell* KatE = nullptr;
     inline Spell* KatR = nullptr;
     inline Spell* Ignite = nullptr;
-    inline Utils* Utils;
+    inline Vector3* Cursor = { };
 
     namespace Menu
     {
         inline MenuElement* Root = nullptr;
-        inline MenuElement* Debug = nullptr;
         
         inline MenuElement* DrawQ = nullptr;
         inline MenuElement* ColorQ = nullptr;
@@ -98,7 +96,6 @@ namespace Katarina
         inline MenuElement* ShunpoMode = nullptr;
         inline MenuElement* Style = nullptr;
         inline MenuElement* Toggle = nullptr;
-        inline MenuElement* Killsteal = nullptr;
         
     }
 };

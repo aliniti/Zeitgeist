@@ -28,15 +28,17 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Champions\Katarina.h" />
+    <ClInclude Include="Champions\Vex.h" />
     <ClInclude Include="Helpers\Shared.h" />
-    <ClInclude Include="Helpers\Utils.h" />
+    <ClInclude Include="Helpers\Utility.h" />
     <ClInclude Include="Helpers\Spell.h" />
     <ClInclude Include="stdafx.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Champions\Katarina.cpp" />
+    <ClCompile Include="Champions\Vex.cpp" />
     <ClCompile Include="Helpers\Shared.cpp" />
-    <ClCompile Include="Helpers\Utils.cpp" />
+    <ClCompile Include="Helpers\Utility.cpp" />
     <ClCompile Include="Helpers\Spell.cpp" />
     <ClInclude Include="Sdk\SdkImport.hpp" />
     <ClCompile Include="stdafx.cpp">

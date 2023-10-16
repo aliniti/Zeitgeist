@@ -1,6 +1,6 @@
 #pragma once
 
-class Utils
+class Utility
 {
 public:
     auto Get(uint16_t handle) -> GameObject*;
@@ -11,5 +11,7 @@ public:
     auto UnderEnemyTurret( Vector3 pos ) -> bool;
     auto UnderEnemyTurret( GameObject* unit ) -> bool;
     auto CountEnemiesInRange( GameObject* pObject, float range ) -> int;
-};
 
+    auto operator new( size_t size ) -> void* { return Globals::Malloc( size ); }
+    auto operator delete( void* p ) noexcept -> void { Globals::Free( p ); }
+};
