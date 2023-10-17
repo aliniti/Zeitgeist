@@ -23,7 +23,7 @@ namespace Vex
     float QDmg( GameObject* unit );
     float WDmg( GameObject* unit );
     float EDmg( GameObject* unit );
-    float RDmg( GameObject * unit, bool recast );
+    float RDmg( GameObject * unit );
     float IgniteDmg( );
     
     void SetupMenu( );
@@ -53,7 +53,7 @@ namespace Vex
         inline MenuElement* AutoW;
         inline MenuElement* HxComboE;
         inline MenuElement* SemiR;
-        inline MenuElement* SemixR;
+        inline MenuElement* HxSemiR;
         inline MenuElement* Ignite;
     }
 };

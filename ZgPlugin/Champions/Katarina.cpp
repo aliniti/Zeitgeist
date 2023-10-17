@@ -527,9 +527,7 @@ namespace Katarina
         }
     }
 
- 
-
-#pragma endregion
+    #pragma endregion
     
     // ░█▄█░▀█▀░█▀▀░█▀▀
     // ░█░█░░█░░▀▀█░█░░
@@ -822,7 +820,7 @@ namespace Katarina
         Menu::Toggle = Menu::Root->AddKeybind( MenuString( "Combo Toggle" ), MenuConfig( "katarina.toggle" ), 'X', true );
         Menu::DrawHPBar = Menu::Root->AddCheckbox( MenuString( "HPBarFill Draw" ), MenuConfig( "katarina.r.draw.hp" ), true );
         
-        Menu::Root->AddSeparator( MenuString( "EzSeries v0.54" ) );
+        Menu::Root->AddSeparator( MenuString( "EzSeries v0.56" ) );
     }
 
 #pragma endregion

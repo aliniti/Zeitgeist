@@ -15,7 +15,7 @@ public:
     auto SetFrom( Vector3 pos ) -> void;
     auto SetRange( float range ) -> void;
 
-    auto RunPrediction( GameObject* pObject, PredictionOutput& output ) const -> void;
+    auto RunPrediction( GameObject* unit, PredictionOutput& output ) const -> bool;
 
     auto Range( ) const -> float;
     auto Level( ) const -> int;

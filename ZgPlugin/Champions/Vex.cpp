@@ -6,25 +6,25 @@ namespace Vex
     {
         SetupMenu( );
 
-        VexQ = new Spell( Q, 550 );
-        VexQ->SetSkillShot( 0.15f, 600.0f, 180.0f, true, PredictionCollisionFlags::Windwall );
+        VexQ = new Spell( Q, 550.f );
+        VexQ->SetSkillShot( 0.25f, 600.f, 180.f, true, PredictionCollisionFlags::Windwall );
 
-        VexX = new Spell( Q, 1200 );
-        VexX->SetSkillShot( 0.40f, 3200.0f, 180.0f, true, PredictionCollisionFlags::Windwall );
+        VexX = new Spell( Q, 1200.f );
+        VexX->SetSkillShot( 0.45f, 3200.f, 180.f, true, PredictionCollisionFlags::Windwall );
 
-        VexW = new Spell( W, 475 );
+        VexW = new Spell( W, 450.f );
         
-        VexE = new Spell( E, 800 );
-        VexE->SetSkillShot( 0.25f, 1300.0f, 200.0f, true, PredictionCollisionFlags::None);
+        VexE = new Spell( E, 800.f );
+        VexE->SetSkillShot( 0.25f, 1300.f, 200.f, true, PredictionCollisionFlags::None );
         
         VexR = new Spell( R );
-        VexR->SetSkillShot( 0.25f, 1600.0f, 100.0f, true, PredictionCollisionFlags::Heroes | PredictionCollisionFlags::Windwall);
+        VexR->SetSkillShot( 0.25f, 1600.f, 130.f, true, PredictionCollisionFlags::Heroes | PredictionCollisionFlags::Windwall );
 
         if (GetPlayer(  )->Spellbook(  )->GetSpell( Summoner1 )->SpellData(  )->Hash(  ) == FNV1A32CI("SummonerDot"))
-            Ignite = new Spell ( Summoner1, 600);
+            Ignite = new Spell ( Summoner1, 600.f);
         
         if (GetPlayer(  )->Spellbook(  )->GetSpell( Summoner2 )->SpellData(  )->Hash(  ) == FNV1A32CI("SummonerDot"))
-            Ignite = new Spell ( Summoner2, 600);
+            Ignite = new Spell ( Summoner2, 600.f);
 
         Globals::Write( "Vex Loaded!\n" );
     }
@@ -80,8 +80,8 @@ namespace Vex
                 Vector3 wts;
                 g_pExportedRenderer->WorldToScreen( i->Position(  ), &wts );
                 
-                const auto dmg  = PDmg( i ) + QDmg( i ) + WDmg( i ) + EDmg( i ) + RDmg( i, true ) + IgniteDmg( );
-                auto pct = dmg/ i->MaxHealth(  ) * 100;
+                const auto dmg  = PDmg( i ) + QDmg( i ) + WDmg( i ) + EDmg( i ) + RDmg( i ) + IgniteDmg( );
+                auto pct = dmg / i->Health(  ) * 100;
                 
                 char buffer[64];
                 Globals::Sprintf( buffer, "%2.f%s",  pct, "%");
@@ -114,7 +114,7 @@ namespace Vex
 
         if ( Menu::SemiR->IsBeingHeldDown(  ) )
         {
-            UseR( g_pExportedTargetSelector->GetTarget( VexR->Range(  ), true ), Menu::SemixR->Value(  ), true);
+            UseR( g_pExportedTargetSelector->GetTarget( VexR->Range(  ), true ), Menu::HxSemiR->Value(  ), true);
         }
     }
 
@@ -124,9 +124,9 @@ namespace Vex
         {
             UseR( g_pExportedTargetSelector->GetTarget( VexR->Range(  ), true ), Menu::HxR->Value(  ));
             
-            if (VexR->Hash(  ) != FNV1A32CI( "VexR2" ) && g_pExportedGlobalClocks->GameTime(  ) - VexR->LastCastTime(  ) > 1.1f)
+            if (VexR->Hash(  ) != FNV1A32CI( "VexR2" ) && g_pExportedGlobalClocks->GameTime(  ) - VexR->LastCastTime(  ) > .55f)
             {
-                UseE( g_pExportedTargetSelector->GetTarget( VexE->Range( ), true ), Menu::HxComboE->Value(  ) );
+                UseE( g_pExportedTargetSelector->GetTarget( VexX->Range( ), true ), Menu::HxComboE->Value(  ) );
                 UseQ( g_pExportedTargetSelector->GetTarget( VexX->Range( ), true ), Menu::HxComboQ->Value(  ) );
                 UseW( g_pExportedTargetSelector->GetTarget( VexW->Range( ), true ));
                 UseIgnite(  g_pExportedTargetSelector->GetTarget( VexX->Range( ) ) );
@@ -138,8 +138,10 @@ namespace Vex
     {
         if ( g_pExportedOrbwalker->GetMode( OrbwalkerMode::Harass )->Enabled( ) )
         {
-            UseE( g_pExportedTargetSelector->GetTarget( VexE->Range( ), true ), Menu::HxHarassE->Value(  ) );
-            UseQ( g_pExportedTargetSelector->GetTarget( VexX->Range( ), true ), Menu::HxHarassQ->Value(  ) );
+            if (GetPlayer(  )->PAR(  ) / GetPlayer(  )->MaxPAR(  ) * 100 > 55)
+            {
+                UseQ( g_pExportedTargetSelector->GetTarget( VexX->Range( ), true ), Menu::HxHarassQ->Value(  ) );
+            }
         }
     }
 
@@ -157,23 +159,23 @@ namespace Vex
         {
             if ( Utils->IsValidTarget( unit, VexQ->Range(  ) ) )
             {
-                PredictionOutput output;
-                VexQ->RunPrediction( unit, output );
-                
-                if ( output.m_flHitChance >= chance )
+                if ( PredictionOutput output; VexQ->RunPrediction( unit, output ))
                 {
-                    VexQ->Cast( output.m_vecCastPosition );
+                    if ( output.m_flHitChance >= chance )
+                    {
+                        VexQ->Cast( output.m_vecCastPosition );
+                    }
                 }
             }
             
             if ( Utils->IsValidTarget( unit, VexX->Range(  ) ) )
             {
-                PredictionOutput output;
-                VexX->RunPrediction( unit, output );
-                
-                if ( output.m_flHitChance >= chance )
+                if ( PredictionOutput output; VexX->RunPrediction( unit, output ))
                 {
-                    VexQ->Cast( output.m_vecCastPosition );
+                    if ( output.m_flHitChance >= chance )
+                    {
+                        VexX->Cast( output.m_vecCastPosition );
+                    }
                 }
             }
         }
@@ -196,12 +198,12 @@ namespace Vex
         {
             if ( Utils->IsValidTarget( unit, VexE->Range(  ) ) )
             {
-                PredictionOutput output;
-                VexE->RunPrediction( unit, output );
-                
-                if ( output.m_flHitChance >= chance )
+                if ( PredictionOutput output; VexE->RunPrediction( unit, output ))
                 {
-                    VexE->Cast( output.m_vecCastPosition );
+                    if ( output.m_flHitChance >= chance )
+                    {
+                        VexE->Cast( output.m_vecCastPosition );
+                    }
                 }
             }
         }
@@ -217,12 +219,12 @@ namespace Vex
                 {
                     if (CanPreExecute( unit ) || semi )
                     {
-                        PredictionOutput output;
-                        VexR->RunPrediction( unit, output );
-                    
-                        if ( output.m_flHitChance >= chance )
+                        if ( PredictionOutput output; VexR->RunPrediction( unit, output ) )
                         {
-                            VexR->Cast( output.m_vecCastPosition );
+                            if ( output.m_flHitChance >= chance )
+                            {
+                                VexR->Cast( output.m_vecCastPosition );
+                            }
                         }
                     }
                 }
@@ -253,10 +255,10 @@ namespace Vex
 
     bool CanPreExecute( GameObject* unit )
     {
-        if (unit == nullptr)
+        if ( unit == nullptr )
             return false;
         
-        const auto dmg  = PDmg( unit ) + QDmg( unit ) + WDmg( unit ) + EDmg( unit ) + RDmg( unit, true ) + IgniteDmg();
+        const auto dmg  = PDmg( unit ) + QDmg( unit ) + WDmg( unit ) + EDmg( unit ) + RDmg( unit ) + IgniteDmg();
         return dmg >= unit->Health(  );
     }
 
@@ -306,7 +308,7 @@ namespace Vex
         return g_pExportedDamage->CalculateMagicDamage( GetPlayer( ), unit, dmg ).m_flTotal;
     }
 
-    float RDmg( GameObject * unit, bool recast )
+    float RDmg( GameObject * unit )
     {
         if (unit == nullptr || !VexR->IsReady(  ))
             return 0;
@@ -315,11 +317,9 @@ namespace Vex
         const int first_base_damage[] = { 75, 125, 175 };
         const int second_base_damage[] = { 150, 250, 350 };
 
-        dmg += first_base_damage[VexR->Level(  ) - 1] + GetPlayer(  )->TotalAbilityDamage(  ) * 0.2;
+        dmg += first_base_damage[VexR->Level(  ) - 1] + ( GetPlayer(  )->TotalAbilityDamage(  ) * 0.2 );
+        dmg += second_base_damage[VexR->Level(  ) - 1] + ( GetPlayer(  )->TotalAbilityDamage(  ) * 0.5 );
         
-        if (recast)
-            dmg += second_base_damage[VexR->Level(  ) - 1] + GetPlayer(  )->TotalAbilityDamage(  ) * 0.5;
-
         return g_pExportedDamage->CalculateMagicDamage( GetPlayer( ), unit, dmg ).m_flTotal;
     }
 
@@ -346,31 +346,33 @@ namespace Vex
         
         const auto q_menu = Menu::Root->AddMenu( MenuString( "(Q) Mistral Bolt " ), MenuConfig( "MistralBolt" ) );
         Menu::UseQ = q_menu->AddCheckbox( MenuString( "Use (Q)" ), MenuConfig( "vex.use.q" ), true );
-        Menu::HxComboQ = q_menu->AddSlider( MenuString( "- Combo Hitchance" ), MenuConfig( "vex.q.combo.chance" ), 0.0, 1.00, 0.12, 2, .01 );
-        Menu::HxHarassQ = q_menu->AddSlider( MenuString( "- Harass Hitchance" ), MenuConfig( "vex.q.harass.chance" ), 0.0, 1.00, 0.20, 2, .01 );
+        //Menu::UseExtendedQ = q_menu->AddCheckbox( MenuString( "- Extended" ), MenuConfig( "vex.use.extended.q" ), false );
+        Menu::HxComboQ = q_menu->AddSlider( MenuString( "- Combo Hitchance" ), MenuConfig( "vex.q.combo.chance" ), 0.0, 1.00, 0.15, 2, .01 );
+        Menu::HxHarassQ = q_menu->AddSlider( MenuString( "- Harass Hitchance" ), MenuConfig( "vex.q.harass.chance" ), 0.0, 1.00, 0.25, 2, .01 );
         Menu::DrawQ = q_menu->AddCheckbox( MenuString( "- Draw" ), MenuConfig( "vex.draw.q" ), true );
         
         const auto w_menu = Menu::Root->AddMenu( MenuString( "(W) Personal Space " ), MenuConfig( "PersonalSpace" ) );
         Menu::UseW = w_menu->AddCheckbox( MenuString( "Use (W)" ), MenuConfig( "vex.use.w" ), true );
-        Menu::AutoW = w_menu->AddSlider( MenuString( "- Auto use if # in Range" ), MenuConfig( "vex.auto.w" ), 1, 5, 2, 0, 1 );
+        Menu::AutoW = w_menu->AddSlider( MenuString( "- Auto use if # in range" ), MenuConfig( "vex.auto.w" ), 1, 5, 2, 0, 1 );
         Menu::DrawW = w_menu->AddCheckbox( MenuString( "- Draw" ), MenuConfig( "vex.draw.w" ), true );
 
         const auto e_menu = Menu::Root->AddMenu( MenuString( "(E) Looming Darkness" ), MenuConfig( "LoomingDarkness" ) );
         Menu::UseE = e_menu->AddCheckbox( MenuString( "Use (E)" ), MenuConfig( "vex.use.e" ), true );
-        Menu::HxComboE = e_menu->AddSlider( MenuString( "- Combo Hitchance" ), MenuConfig( "vex.e.combo.chance" ), 0.0, 1.00, 0.12, 2, .01 );
-        Menu::HxHarassE = e_menu->AddSlider( MenuString( "- Harass Hitchance" ), MenuConfig( "vex.e.harass.chance" ), 0.0, 1.00, 0.20, 2, .01 );
+        Menu::HxComboE = e_menu->AddSlider( MenuString( "- Combo Hitchance" ), MenuConfig( "vex.e.combo.chance" ), 0.0, 1.00, 0.20, 2, .01 );
+        Menu::HxHarassE = e_menu->AddSlider( MenuString( "- Harass Hitchance" ), MenuConfig( "vex.e.harass.chance" ), 0.0, 1.00, 0.30, 2, .01 );
         Menu::DrawE = e_menu->AddCheckbox( MenuString( "- Draw" ), MenuConfig( "vex.draw.e" ), true );
 
         const auto r_menu = Menu::Root->AddMenu( MenuString( "(R) Shadow Surge " ), MenuConfig( "ShadowSurge" ) );
         Menu::UseR = r_menu->AddCheckbox( MenuString( "Use (R)" ), MenuConfig( "vex.use.r" ), true );
-        Menu::HxR = r_menu->AddSlider( MenuString( "- Combo Hitchance" ), MenuConfig( "vex.r.chance" ), 0.0, 1.00, 0.20, 2, .01 );
+        Menu::HxR = r_menu->AddSlider( MenuString( "- Combo Hitchance" ), MenuConfig( "vex.r.chance" ), 0.0, 1.00, 0.25, 2, .01 );
         Menu::DrawR = r_menu->AddCheckbox( MenuString( "- Draw" ), MenuConfig( "vex.draw.r" ), true );
-        Menu::SemiR = r_menu->AddKeybind( MenuString( "Semi Cast" ), MenuConfig( "vex.semi.r" ), 'X', true  );
-        Menu::SemixR = r_menu->AddSlider( MenuString( "- Semi Hitchance" ), MenuConfig( "vex.semi.r.chance" ), 0.0, 1.00, 0.00, 2, .01 );
+        Menu::SemiR = r_menu->AddKeybind( MenuString( "Semi Cast" ), MenuConfig( "vex.semi.r.key" ), 'G', true  );
+        Menu::HxSemiR = r_menu->AddSlider( MenuString( "- Semi Hitchance" ), MenuConfig( "vex.semi.r.chance" ), 0.0, 1.00, 0.10, 2, .01 );
 
         Menu::Root->AddSeparator( MenuString( "Misc" ) );
+        //Menu::HarassPct = Menu::Root->AddSlider( MenuString( "- Harass Min Mana (%)" ), MenuConfig( "vex.harass.mana" ), 0, 100, 65, 0, 1 );
         Menu::Ignite = Menu::Root->AddCheckbox( MenuString( "Use Ignite" ), MenuConfig( "vex.ignite"), true );
         
-        Menu::Root->AddSeparator( MenuString( "EzSeries v0.54" ) );
+        Menu::Root->AddSeparator( MenuString( "EzSeries v0.56" ) );
     }
 }
