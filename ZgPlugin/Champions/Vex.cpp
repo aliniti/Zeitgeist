@@ -97,7 +97,7 @@ namespace Vex
         VexR->SetRange( VexR->Level(  ) * 500 + 1500 );
         Menu::SemiR->m_bEnabled = Menu::SemiR->Enabled(  ) && !Menu::SemiR->IsBeingHeldDown(  ) ? false : true;
         
-        Auto();
+        Auto( );
         Combo( );
         Harass( );
     }
@@ -211,7 +211,7 @@ namespace Vex
 
     void UseR( GameObject* unit, float chance, bool semi )
     {
-        if ( unit != nullptr && VexR->IsReady( ) && Menu::UseR->Enabled( ) ) 
+        if ( unit != nullptr && VexR->IsReady( ) && ( Menu::UseR->Enabled( ) || semi ) ) 
         {
             if ( Utils->IsValidTarget( unit, VexR->Range(  ) ) )
             {
@@ -341,12 +341,11 @@ namespace Vex
 
     void SetupMenu( )
     {
-        Menu::Root = g_pExportedMenu->AddMenu( "EzSeries - Vex", MenuConfig( "EzSeries" ) );
+        Menu::Root = g_pExportedMenu->AddMenu( "EzVex", MenuConfig( "EzSeries" ) );
         Menu::Root->AddSeparator( MenuString( "Spells" ) );
         
         const auto q_menu = Menu::Root->AddMenu( MenuString( "(Q) Mistral Bolt " ), MenuConfig( "MistralBolt" ) );
         Menu::UseQ = q_menu->AddCheckbox( MenuString( "Use (Q)" ), MenuConfig( "vex.use.q" ), true );
-        //Menu::UseExtendedQ = q_menu->AddCheckbox( MenuString( "- Extended" ), MenuConfig( "vex.use.extended.q" ), false );
         Menu::HxComboQ = q_menu->AddSlider( MenuString( "- Combo Hitchance" ), MenuConfig( "vex.q.combo.chance" ), 0.0, 1.00, 0.15, 2, .01 );
         Menu::HxHarassQ = q_menu->AddSlider( MenuString( "- Harass Hitchance" ), MenuConfig( "vex.q.harass.chance" ), 0.0, 1.00, 0.25, 2, .01 );
         Menu::DrawQ = q_menu->AddCheckbox( MenuString( "- Draw" ), MenuConfig( "vex.draw.q" ), true );
