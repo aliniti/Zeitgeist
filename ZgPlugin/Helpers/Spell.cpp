@@ -14,7 +14,7 @@ Spell::Spell( SpellSlot slot, float range )
     this->time = 0;
 }
 
-void Spell::SetSkillShot( float delay, float speed, float radius, bool hitbox, PredictionCollisionFlags flags )
+auto Spell::SetSkillShot( float delay, float speed, float radius, bool hitbox, PredictionCollisionFlags flags ) -> void
 {
     this->delay = delay;
     this->speed = speed;
@@ -23,7 +23,7 @@ void Spell::SetSkillShot( float delay, float speed, float radius, bool hitbox, P
     this->flags = flags;
 }
 
-float Spell::Range( ) const
+auto Spell::Range( ) const -> float
 {
     return this->range;
 }
@@ -33,22 +33,22 @@ auto Spell::Level( ) const -> int
     return GetPlayer(  )->Spellbook(  )->GetSpell( this->slot )->Level(  );
 }
 
-SpellSlot Spell::Slot( ) const
+auto Spell::Slot( ) const -> SpellSlot
 {
     return this->slot;
 }
 
-float Spell::LastCastTime( ) const
+auto Spell::LastCastTime( ) const -> float
 {
     return this->time;
 }
 
-uint32_t Spell::Hash( ) const
+auto Spell::Hash( ) const -> uint32_t
 {
     return GetPlayer(  )->Spellbook(  )->GetSpell( this->slot )->SpellData(  )->Hash(  );
 }
 
-bool Spell::IsReady( const float t ) const
+auto Spell::IsReady( const float t ) const -> bool
 {
     const auto spellbook = GetPlayer( )->Spellbook( );
     if ( !spellbook ) return false;
@@ -60,7 +60,7 @@ bool Spell::IsReady( const float t ) const
     return spellbook->CanUseSpell( this->slot );
 }
 
-void Spell::Cast( )
+auto Spell::Cast( ) -> void
 {
     if ( g_pExportedGlobalClocks->GameTime( ) - this->time <= .25f )
         return;
@@ -74,7 +74,7 @@ void Spell::Cast( )
     }
 }
 
-void Spell::Cast( GameObject* target )
+auto Spell::Cast( GameObject* target ) -> void
 {
     if ( g_pExportedGlobalClocks->GameTime( ) - this->time <= .25f )
         return;
@@ -88,7 +88,7 @@ void Spell::Cast( GameObject* target )
     }
 }
 
-void Spell::Cast( Vector3 position )
+auto Spell::Cast( Vector3 position ) -> void
 {
     if ( g_pExportedGlobalClocks->GameTime( ) - this->time <= .25f )
         return;
@@ -111,7 +111,7 @@ auto Spell::SetRange( float range ) -> void
     this->range = range;
 }
 
-bool Spell::RunPrediction( GameObject* unit, PredictionOutput & output ) const
+auto Spell::RunPrediction( GameObject* unit, PredictionOutput& output ) const -> bool
 {
     if ( !unit ) return false;
     
@@ -119,6 +119,26 @@ bool Spell::RunPrediction( GameObject* unit, PredictionOutput & output ) const
     {
         .m_pSource = GetPlayer( ),
         .m_vecSourcePosition = GetPlayer(  )->Position(  ),
+        .m_bHitBox = this->hitbox,
+        .m_flRange = this->range,
+        .m_flDelay = this->delay,
+        .m_flRadius = this->radius,
+        .m_flSpeed = this->speed,
+        .m_iFlags = this->flags,
+    };
+    
+    return g_pExportedPrediction->GetPrediction( unit, input, output );
+}
+
+auto Spell::RunPrediction( GameObject* from, GameObject* unit, PredictionOutput& output ) const -> bool
+{
+    if ( !unit ) return false;
+    if ( !from ) return false;
+    
+    const PredictionInput input
+    {
+        .m_pSource = from,
+        .m_vecSourcePosition = from->Position(  ),
         .m_bHitBox = this->hitbox,
         .m_flRange = this->range,
         .m_flDelay = this->delay,

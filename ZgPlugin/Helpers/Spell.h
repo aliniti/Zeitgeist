@@ -16,6 +16,7 @@ public:
     auto SetRange( float range ) -> void;
 
     auto RunPrediction( GameObject* unit, PredictionOutput& output ) const -> bool;
+    auto RunPrediction( GameObject* from, GameObject* unit, PredictionOutput& output ) const -> bool;
 
     auto Range( ) const -> float;
     auto Level( ) const -> int;
