@@ -3,14 +3,24 @@
 // set to SDBM32CI("ChampionName") to load on a specific champion only
 extern "C" inline __declspec(dllexport) std::uint32_t g_iUniqueAssemblyName = 0;
 
-MenuElement* Config;
+void OnCreateObject( GameObject* unit )
+{
+    switch ( GetPlayer( )->CharacterData( )->SkinHash( ) )
+    {
+        // case SDBM32CI( "Zed" ):
+        //     return Zedd::OnCreateObj( unit );
+        default: ;
+    } 
+}
 
-void OnCreateParticle( GameObject* pObject, std::uint32_t iHash )
+void OnCreateParticle( GameObject* unit, std::uint32_t iHash )
 {
     switch ( GetPlayer( )->CharacterData( )->SkinHash( ) )
     {
         case SDBM32CI( "Katarina" ):
-            return Katarina::OnCreateParticle( pObject, iHash );
+            return Katarina::OnCreateParticle( unit, iHash );
+        // case SDBM32CI( "Zed" ):
+        //     return Zedd::OnCreateParticle( unit, iHash );
         default: ;
     }
 }
@@ -23,6 +33,8 @@ void OnDraw( )
             return Katarina::OnDraw( );
         case SDBM32CI( "Vex" ):
             return Vex::OnDraw( );
+        // case SDBM32CI( "Zed" ):
+        //     return Zedd::OnDraw( );
         default: ;
     }
 }
@@ -33,9 +45,10 @@ void OnPresentDraw( )
     {
         case SDBM32CI( "Katarina" ):
             return Katarina::OnPresentDraw( );
-
         case SDBM32CI( "Vex" ):
             return Vex::OnPresentDraw( );
+        // case SDBM32CI( "Zed" ):
+        //     return Zedd::OnPresentDraw( );
         default: ;
     }
 }
@@ -47,7 +60,9 @@ void OnUpdate( )
         case SDBM32CI( "Katarina" ):
             return Katarina::OnUpdate( );
         case SDBM32CI( "Vex" ):
-            return Vex::OnUpdate( );       
+            return Vex::OnUpdate( );
+        // case SDBM32CI( "Zed" ):
+        //     return Zedd::OnUpdate( );    
         default: ;
     }
 }
@@ -59,7 +74,9 @@ void OnBootPlugin( )
         case SDBM32CI( "Katarina" ):
             return Katarina::OnBoot( );
         case SDBM32CI( "Vex" ):
-            return Vex::OnBoot( );       
+            return Vex::OnBoot( );
+        // case SDBM32CI( "Zed" ):
+        //     return Zedd::OnBoot( );       
         default: ;
     }
 }
@@ -71,7 +88,9 @@ void OnTerminatePlugin( )
         case SDBM32CI( "Katarina" ):
             return Katarina::OnTerminate( );
         case SDBM32CI( "Vex" ):
-            return Vex::OnTerminate( );       
+            return Vex::OnTerminate( );
+        // case SDBM32CI( "Zed" ):
+        //     return Zedd::OnTerminate( );               
         default: ;
     }
 }
@@ -81,8 +100,9 @@ extern "C" bool __declspec(dllexport, noinline, code_seg(".tempc")) __stdcall Zg
 {
     pSdkContext->Initialize( );
     Globals::Allocate( );
-
+    
     OnBootPlugin( );
+    g_pExportedEventHandler->Add( EventType::OnCreateObject, OnCreateObject );
     g_pExportedEventHandler->Add( EventType::OnCreateParticle, OnCreateParticle );
     g_pExportedEventHandler->Add( EventType::OnWorldDraw, OnDraw );
     g_pExportedEventHandler->Add( EventType::OnPresentDraw, OnPresentDraw );
@@ -93,6 +113,7 @@ extern "C" bool __declspec(dllexport, noinline, code_seg(".tempc")) __stdcall Zg
 extern "C" void __declspec(dllexport, noinline, code_seg(".text")) __stdcall ZgUnload( )
 {
     OnTerminatePlugin(  );
+    g_pExportedEventHandler->Remove( EventType::OnCreateObject, OnCreateObject );
     g_pExportedEventHandler->Remove( EventType::OnCreateParticle, OnCreateParticle );
     g_pExportedEventHandler->Remove( EventType::OnWorldDraw, OnDraw );
     g_pExportedEventHandler->Remove( EventType::OnPresentDraw, OnPresentDraw );

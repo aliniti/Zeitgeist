@@ -767,7 +767,7 @@ namespace Katarina
     
     void SetupMenu( )
     {
-        Menu::Root = g_pExportedMenu->AddMenu("EzSeries - Katarina", MenuConfig("EzSeries"));
+        Menu::Root = g_pExportedMenu->AddMenu("EzKatarina", MenuConfig("EzSeries"));
         Menu::Root->AddSeparator( MenuString( "Spells" ) );
         
         const auto q_menu = Menu::Root->AddMenu( MenuString( "(Q) Bouncing Blade" ), MenuConfig( "BouncingBlade" ) );
