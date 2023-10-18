@@ -83,7 +83,7 @@ auto Utility::UnderEnemyTurret( GameObject* unit ) -> bool
     return turrets > 0;
 }
 
-auto Utility::CountEnemiesInRange( GameObject* pObject, float range ) -> int
+auto Utility::CountEnemiesInRange( float range ) -> int
 {
     int units = 0;
 

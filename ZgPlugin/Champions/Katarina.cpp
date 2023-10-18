@@ -125,7 +125,7 @@ namespace Katarina
                 }
             }
 
-            if ( Utils->CountEnemiesInRange( GetPlayer( ), 500 ) < 1 && Menu::Cancel->Enabled( ) )
+            if ( Utils->CountEnemiesInRange( 500 ) < 1 && Menu::Cancel->Enabled( ) )
             {
                 auto pos = g_pExportedHudManager->CursorPositionUnclipped( );
                 auto new_pos = GetPlayer(  )->Position(  ).Extend( *pos, GetPlayer(  )->BoundingRadius(  ) + 400);
@@ -201,7 +201,7 @@ namespace Katarina
     
     void Auto( )
     {
-        if ( Utils->CountEnemiesInRange( GetPlayer(  ), 550) >= Menu::AutoR->Value(  ) )  
+        if ( Utils->CountEnemiesInRange( 550 ) >= Menu::AutoR->Value(  ) )  
         {
             if ( Menu::UseR->Enabled(  ) &&  KatR->IsReady(  ) && !Spinning(  ))
             {

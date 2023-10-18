@@ -10,9 +10,11 @@ namespace Vex
     
     void Auto( );
     void Combo( );
+    void Clear( );
     void Harass( );
     
     void UseQ( GameObject* unit, float chance );
+    void UseX( GameObject* unit, float chance );
     void UseW( GameObject* unit );
     void UseE( GameObject* unit, float chance );
     void UseR( GameObject* unit, float chance, bool semi = false );
@@ -41,19 +43,21 @@ namespace Vex
         inline MenuElement* HxComboQ;
         inline MenuElement* HxHarassQ;
         inline MenuElement* UseQ;
+        inline MenuElement* ClearQ;
         inline MenuElement* DrawQ;
         inline MenuElement* UseW;
         inline MenuElement* DrawW;
-        inline MenuElement* HxHarassE;
         inline MenuElement* UseE;
+        inline MenuElement* HxComboE;
+        inline MenuElement* HxHarassE;
         inline MenuElement* DrawE;
         inline MenuElement* HxR;
         inline MenuElement* UseR;
         inline MenuElement* DrawR;
         inline MenuElement* AutoW;
-        inline MenuElement* HxComboE;
         inline MenuElement* SemiR;
         inline MenuElement* HxSemiR;
         inline MenuElement* Ignite;
+        inline MenuElement* UseExtendedQ;
     }
 };

@@ -19,6 +19,7 @@ public:
     auto RunPrediction( GameObject* from, GameObject* unit, PredictionOutput& output ) const -> bool;
 
     auto Range( ) const -> float;
+    auto Radius( ) const -> float;
     auto Level( ) const -> int;
     auto Slot( ) const -> SpellSlot;
     auto LastCastTime( ) const -> float;

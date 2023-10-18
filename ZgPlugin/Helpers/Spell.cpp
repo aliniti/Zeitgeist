@@ -28,6 +28,11 @@ auto Spell::Range( ) const -> float
     return this->range;
 }
 
+auto Spell::Radius( ) const -> float
+{
+    return this->radius;
+}
+
 auto Spell::Level( ) const -> int
 {
     return GetPlayer(  )->Spellbook(  )->GetSpell( this->slot )->Level(  );
