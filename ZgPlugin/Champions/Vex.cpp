@@ -11,13 +11,15 @@ namespace Vex
         VexQ->SetHitBox( true );
 
         VexX = new Spell( Q, 1200.f );
-        VexX->SetSkillShot( 0.80f, 3200.f, 100.f, true, PredictionCollisionFlags::Windwall );
+        VexX->SetSkillShot( 0.80f, 3200.f, 180.f, true, PredictionCollisionFlags::Windwall );
         VexX->SetHitBox( true );
 
         VexW = new Spell( W, 475.f );
+        VexW->SetHitBox( true );
 
         VexE = new Spell( E, 1000.f);
-        VexE->SetSkillShot( 1.1f, 0.f, 200.f, false, PredictionCollisionFlags::None );
+        VexE->SetSkillShot( 0.55f, 0.f, 200.f, false, PredictionCollisionFlags::None );
+        VexE->SetHitBox( false );
 
         VexR = new Spell( R );
         VexR->SetSkillShot( 0.25f, 1600.f, 100.f, true, PredictionCollisionFlags::Heroes | PredictionCollisionFlags::Windwall );
@@ -111,30 +113,6 @@ namespace Vex
 
     void Auto( )
     {
-        VexQ->SetDelay( Debug::QDelay->Value(  ) );
-        VexQ->SetSpeed( Debug::QSpeed->Value(  ) );
-        VexQ->SetRadius( Debug::QRadius->Value(  ) );
-        VexQ->SetRange( Debug::QRange->Value(  ) );
-        VexQ->SetHitBox( Debug::QHitBox->Enabled(  ) );
-
-        VexX->SetDelay( Debug::Q2Delay->Value(  ) );
-        VexX->SetSpeed( Debug::Q2Speed->Value(  ) );
-        VexX->SetRadius( Debug::Q2Radius->Value(  ) );
-        VexX->SetRange( Debug::Q2Range->Value(  ) );
-        VexX->SetHitBox( Debug::Q2HitBox->Enabled(  ) );
-
-        VexE->SetDelay( Debug::EDelay->Value(  ) );
-        VexE->SetSpeed( Debug::ESpeed->Value(  ) );
-        VexE->SetRadius( Debug::ERadius->Value(  ) );
-        VexE->SetRange( Debug::ERange->Value(  ) );
-        VexE->SetHitBox( Debug::EHitBox->Enabled(  ) );
-
-        VexR->SetDelay( Debug::RDelay->Value(  ) );
-        VexR->SetSpeed( Debug::RSpeed->Value(  ) );
-        VexR->SetRadius( Debug::RRadius->Value(  ) );
-        VexR->SetRange( Debug::RRange->Value(  ) );
-        VexR->SetHitBox( Debug::RHitBox->Enabled(  ) );
-        
         if ( GUtils->CountEnemiesInRange( VexW->Range( ) ) >= Menu::AutoW->Value( ) )
         {
             if ( Menu::UseW->Enabled( ) && VexW->IsReady( ) )
@@ -154,10 +132,10 @@ namespace Vex
         if ( g_pExportedOrbwalker->GetMode( OrbwalkerMode::Combo )->Enabled( ) )
         {
             UseW( g_pExportedTargetSelector->GetTarget( VexW->Range( ), VexW->HitBox(  ) ) );
-            UseR( g_pExportedTargetSelector->GetTarget( VexR->Range( ), VexR->HitBox(  ) ), Debug::RChance->Value(  ) );
-            UseE( g_pExportedTargetSelector->GetTarget( VexE->Range( ), VexE->HitBox(  ) ), Debug::EChance->Value(  ) );
-            UseQ( g_pExportedTargetSelector->GetTarget( VexQ->Range( ), VexQ->HitBox(  ) ), Debug::QChance->Value(  ) );
-            UseX( g_pExportedTargetSelector->GetTarget( VexX->Range( ), VexX->HitBox(  ) ), Debug::Q2Chance->Value(  ) );
+            UseR( g_pExportedTargetSelector->GetTarget( VexR->Range( ), VexR->HitBox(  ) ), 0 );
+            UseE( g_pExportedTargetSelector->GetTarget( VexE->Range( ), VexE->HitBox(  ) ), 0 );
+            UseQ( g_pExportedTargetSelector->GetTarget( VexQ->Range( ), VexQ->HitBox(  ) ), 0 );
+            UseX( g_pExportedTargetSelector->GetTarget( VexX->Range( ), VexX->HitBox(  ) ), 0 );
             UseIgnite( g_pExportedTargetSelector->GetTarget( VexX->Range( ) ) );
         }
     }
@@ -433,72 +411,39 @@ namespace Vex
     void SetupMenu( )
     {
         Menu::Root = g_pExportedMenu->AddMenu( "EzVex", MenuConfig( "EzSeries" ) );
+        Menu::Root->AddSeparator( MenuString( "EzSeries - Vex" ) );
+        Menu::Ignite = Menu::Root->AddCheckbox( MenuString( "[Summoner] Ignite" ), MenuConfig( "vex.ignite" ), true );
 
-        // ------------- TEST
-        auto test = Menu::Root->AddMenu( MenuString( "TEST" ), MenuConfig("TEST") );
-
-        Debug::QChance = test->AddSlider( MenuString( "(Q) Hitchance" ), MenuConfig( "test.q.chance" ), 0.00, 1.00, 0.00, 2, .01 );
-        Debug::QHitBox = test->AddCheckbox( MenuString( "(Q) Include HitBox" ), MenuConfig( "test.q.hitbox" ), true );
-        Debug::QDelay = test->AddSlider( MenuString( "(Q) Delay" ), MenuConfig( "test.q.delay" ), 0.00, 2.00, 0.25, 2, .01 );
-        Debug::QSpeed = test->AddSlider( MenuString( "(Q) Speed" ), MenuConfig( "test.q.speed" ), 0.00, 3200.00, 600.00, 2, .01 );
-        Debug::QRadius = test->AddSlider( MenuString( "(Q) Radius" ), MenuConfig( "test.q.radius" ), 0.00, 500.00, 180.00, 2, .01 );
-        Debug::QRange = test->AddSlider( MenuString( "(Q) Range" ), MenuConfig( "test.q.range" ), 0.00, 3000.00, 550.00, 2, .01 );
-        test->AddSeparator( MenuString( "-----" ) );
-        Debug::Q2Chance = test->AddSlider( MenuString( "(Q2) Hitchance" ), MenuConfig( "test.q2.chance" ), 0.00, 1.00, 0.00, 2, .01 );
-        Debug::Q2HitBox = test->AddCheckbox( MenuString( "(Q2) Include HitBox" ), MenuConfig( "test.q2.hitbox" ), true );
-        Debug::Q2Delay = test->AddSlider( MenuString( "(Q2) Delay" ), MenuConfig( "test.q2.delay" ), 0.00, 2.00, 0.45, 2, .01 );
-        Debug::Q2Speed = test->AddSlider( MenuString( "(Q2) Speed" ), MenuConfig( "test.q2.speed" ), 0.00, 3200.00, 3200.00, 2, .01 );
-        Debug::Q2Radius = test->AddSlider( MenuString( "(Q2) Radius" ), MenuConfig( "test.q2.radius" ), 0.00, 500.00, 180.00, 2, .01 );
-        Debug::Q2Range = test->AddSlider( MenuString( "(Q2) Range" ), MenuConfig( "test.q2.range" ), 0.00, 3000.00, 1200.00, 2, .01 );
-        test->AddSeparator( MenuString( "-----" ) );
-        Debug::EChance = test->AddSlider( MenuString( "(E) Hitchance" ), MenuConfig( "test.e.chance" ), 0.00, 1.00, 0.00, 2, .01 );
-        Debug::EHitBox = test->AddCheckbox( MenuString( "(E) Include HitBox" ), MenuConfig( "test.e.hitbox" ), true );
-        Debug::EDelay = test->AddSlider( MenuString( "(E) Delay" ), MenuConfig( "test.e.delay" ), 0.00, 2.00, 0.25, 2, .01 );
-        Debug::ESpeed = test->AddSlider( MenuString( "(E) Speed" ), MenuConfig( "test.e.speed" ), 0.00, 3200.00, 1300.00, 2, .01 );
-        Debug::ERadius = test->AddSlider( MenuString( "(E) Radius" ), MenuConfig( "test.e.radius" ), 0.00, 500.00, 200.00, 2, .01 );
-        Debug::ERange = test->AddSlider( MenuString( "(E) Range" ), MenuConfig( "test.e.range" ), 0.00, 3000.00, 800.00, 2, .01 );
-
-        test->AddSeparator( MenuString( "-----" ) );
-        Debug::RChance = test->AddSlider( MenuString( "(R) Hitchance" ), MenuConfig( "test.r.chance" ), 0.00, 1.00, 0.00, 2, .01 );
-        Debug::RHitBox = test->AddCheckbox( MenuString( "(R) Include HitBox" ), MenuConfig( "test.r.hitbox" ), true );
-        Debug::RDelay = test->AddSlider( MenuString( "(R) Delay" ), MenuConfig( "test.r.delay" ), 0.00, 2.00, 0.25, 2, .01 );
-        Debug::RSpeed = test->AddSlider( MenuString( "(R) Speed" ), MenuConfig( "test.r.speed" ), 0.00, 3200.00, 1600.00, 2, .01 );
-        Debug::RRadius = test->AddSlider( MenuString( "(R) Radius" ), MenuConfig( "test.r.radius" ), 0.00, 500.00, 130.00, 2, .01 );
-        Debug::RRange = test->AddSlider( MenuString( "(R) Range" ), MenuConfig( "test.r.range" ), 0.00, 3000.00, 2000.00, 2, .01 );
-        // -----------
-
-        
-        Menu::Root->AddSeparator( MenuString( "Spells" ) );
-
-        const auto q_menu = Menu::Root->AddMenu( MenuString( "(Q) Mistral Bolt " ), MenuConfig( "MistralBolt" ) );
-        Menu::UseQ = q_menu->AddCheckbox( MenuString( "Use (Q)" ), MenuConfig( "vex.use.q" ), true );
+        const auto q_menu = Menu::Root->AddMenu( MenuString( "[Q] Mistral Bolt" ), MenuConfig( "MistralBolt" ) );
+        Menu::UseQ = q_menu->AddCheckbox( MenuString( "Use [Q]" ), MenuConfig( "vex.use.q" ), true );
         Menu::ClearQ = q_menu->AddCheckbox( MenuString( "- Smart Clear" ), MenuConfig( "vex.use.q.clear" ), true );
         Menu::DrawQ = q_menu->AddCheckbox( MenuString( "- Draw" ), MenuConfig( "vex.draw.q" ), true );
-        Menu::UseX = q_menu->AddCheckbox( MenuString( "Use Extended (Q)" ), MenuConfig( "vex.use.q.extended" ), true );
+        Menu::UseX = q_menu->AddCheckbox( MenuString( "Use Extended [Q]" ), MenuConfig( "vex.use.q.extended" ), true );
         Menu::DrawX = q_menu->AddCheckbox( MenuString( "- Draw" ), MenuConfig( "vex.draw.x" ), false );
         
-        const auto w_menu = Menu::Root->AddMenu( MenuString( "(W) Personal Space " ), MenuConfig( "PersonalSpace" ) );
-        Menu::UseW = w_menu->AddCheckbox( MenuString( "Use (W)" ), MenuConfig( "vex.use.w" ), true );
+        const auto w_menu = Menu::Root->AddMenu( MenuString( "[W] Personal Space" ), MenuConfig( "PersonalSpace" ) );
+        Menu::UseW = w_menu->AddCheckbox( MenuString( "Use [W]" ), MenuConfig( "vex.use.w" ), true );
         Menu::AutoW = w_menu->AddSlider( MenuString( "- Auto use if # in range" ), MenuConfig( "vex.auto.w" ), 1, 5, 2, 0, 1 );
         Menu::DrawW = w_menu->AddCheckbox( MenuString( "- Draw" ), MenuConfig( "vex.draw.w" ), true );
 
-        const auto e_menu = Menu::Root->AddMenu( MenuString( "(E) Looming Darkness" ), MenuConfig( "LoomingDarkness" ) );
-        Menu::UseE = e_menu->AddCheckbox( MenuString( "Use (E)" ), MenuConfig( "vex.use.e" ), true );
+        const auto e_menu = Menu::Root->AddMenu( MenuString( "[E] Looming Darkness" ), MenuConfig( "LoomingDarkness" ) );
+        Menu::UseE = e_menu->AddCheckbox( MenuString( "Use [E]" ), MenuConfig( "vex.use.e" ), true );
         // Menu::HxComboE = e_menu->AddSlider( MenuString( "- Combo Hitchance" ), MenuConfig( "vex.e.combo.chance.x" ), 0.0, 1.00, 0.15, 2, .01 );
         // Menu::HxHarassE = e_menu->AddSlider( MenuString( "- Harass Hitchance" ), MenuConfig( "vex.e.harass.chance.x" ), 0.0, 1.00, 0.25, 2, .01 );
         Menu::DrawE = e_menu->AddCheckbox( MenuString( "- Draw" ), MenuConfig( "vex.draw.e" ), true );
 
-        const auto r_menu = Menu::Root->AddMenu( MenuString( "(R) Shadow Surge " ), MenuConfig( "ShadowSurge" ) );
-        Menu::UseR = r_menu->AddCheckbox( MenuString( "Use (R)" ), MenuConfig( "vex.use.r" ), true );
-        //Menu::HxR = r_menu->AddSlider( MenuString( "- Hitchance" ), MenuConfig( "vex.r.chance" ), 0.0, 1.00, 0.25, 2, .01 );
+        const auto r_menu = Menu::Root->AddMenu( MenuString( "[R] Shadow Surge" ), MenuConfig( "ShadowSurge" ) );
+        Menu::UseR = r_menu->AddCheckbox( MenuString( "Use [R]" ), MenuConfig( "vex.use.r" ), true );
+        
+        // const auto dont_r = r_menu->AddMenu( MenuString( "Dont Use" ), MenuConfig( "DontUse" ) );
+        // Menu::HxR = r_menu->AddSlider( MenuString( "- Hitchance" ), MenuConfig( "vex.r.chance" ), 0.0, 1.00, 0.25, 2, .01 );
         Menu::DrawR = r_menu->AddCheckbox( MenuString( "- Draw" ), MenuConfig( "vex.draw.r" ), true );
-        Menu::SemiR = r_menu->AddKeybind( MenuString( "Semi Cast" ), MenuConfig( "vex.semi.r.key" ), 'T', true );
+        Menu::SemiR = r_menu->AddKeybind( MenuString( "Semi Cast [R]" ), MenuConfig( "vex.semi.r.key" ), 'T', true );
         Menu::HxSemiR = r_menu->AddSlider( MenuString( "- Hitchance" ), MenuConfig( "vex.semi.r.chance" ), 0.0, 1.00, 0.10, 2, .01 );
 
-        Menu::Root->AddSeparator( MenuString( "Misc" ) );
+        // Menu::Root->AddSeparator( MenuString( "Misc" ) );
         //Menu::HarassPct = Menu::Root->AddSlider( MenuString( "- Harass Min Mana (%)" ), MenuConfig( "vex.harass.mana" ), 0, 100, 65, 0, 1 );
-        Menu::Ignite = Menu::Root->AddCheckbox( MenuString( "Use Ignite" ), MenuConfig( "vex.ignite" ), true );
         
-        Menu::Root->AddSeparator( MenuString( "EzSeries v0.60" ) );
+        Menu::Root->AddSeparator( MenuString( "EzSeries: v0.61" ) );
     }
 }

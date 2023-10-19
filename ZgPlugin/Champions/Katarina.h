@@ -92,10 +92,9 @@ namespace Katarina
         inline MenuElement* Channel = nullptr;
         inline MenuElement* Cancel = nullptr;
         inline MenuElement* DaggerCalc = nullptr;
-        inline MenuElement* UltMode = nullptr;
         inline MenuElement* ShunpoMode = nullptr;
         inline MenuElement* Style = nullptr;
         inline MenuElement* Toggle = nullptr;
-        
+        inline MenuElement* RKillable;
     }
 };

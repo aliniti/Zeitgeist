@@ -397,7 +397,7 @@ namespace Katarina
                 return;
 
             // - ult if killable or always
-            if ( Menu::UltMode->SelectedItem( ) == 1 && CanPreExecute( unit ) || Menu::UltMode->SelectedItem( ) == 0 )
+            if ( Menu::RKillable->Enabled(  ) && CanPreExecute( unit ) || !Menu::RKillable->Enabled(  ) )
             {
                 // - pre cast w (if available)
                 ( KatW->IsReady( ) ? KatW : KatR )->Cast( );
@@ -768,59 +768,56 @@ namespace Katarina
     void SetupMenu( )
     {
         Menu::Root = g_pExportedMenu->AddMenu("EzKatarina", MenuConfig("EzSeries"));
-        Menu::Root->AddSeparator( MenuString( "Spells" ) );
+        Menu::Root->AddSeparator( MenuString( "EzSeries - Katarina" ) );
+        Menu::UseIgnite = Menu::Root->AddCheckbox( MenuString( "[Summoner] Ignite" ), MenuConfig( "katarina.use.ignite" ), true );
         
-        const auto q_menu = Menu::Root->AddMenu( MenuString( "(Q) Bouncing Blade" ), MenuConfig( "BouncingBlade" ) );
-        Menu::UseQ = q_menu->AddCheckbox( MenuString( "Use (Q)" ), MenuConfig( "katarina.use.q" ), true );
+        const auto q_menu = Menu::Root->AddMenu( MenuString( "[Q] Bouncing Blade" ), MenuConfig( "BouncingBlade" ) );
+        Menu::UseQ = q_menu->AddCheckbox( MenuString( "Use [Q)" ), MenuConfig( "katarina.use.q" ), true );
         Menu::LastHitQ = q_menu->AddCheckbox( MenuString( "- Last Hit" ), MenuConfig( "katarina.last.hit.q" ), true );
-        Menu::DaggerCalc = q_menu->AddSlider( MenuString( "- Daggers (Dmg Calc)" ), MenuConfig( "katarina.q.daggers" ), 0, 3, 2, 0, 1 );
+        Menu::DaggerCalc = q_menu->AddSlider( MenuString( "- Daggers [Dmg Calc]" ), MenuConfig( "katarina.q.daggers" ), 0, 3, 2, 0, 1 );
         Menu::DaggerCalc->SetTooltipName( TooltipString( "Calculates as if # daggers near target." ) );
         Menu::DrawDagger = q_menu->AddCheckbox( MenuString( "- Draw Dagger Lifetime" ), MenuConfig( "katarina.dagger.life" ), true );
         Menu::DrawQ = q_menu->AddCheckbox( MenuString( "- Draw Range" ), MenuConfig( "katarina.q.draw" ), true );
 
-        const auto w_menu = Menu::Root->AddMenu( MenuString( "(W) Preparation" ), MenuConfig( "Preparation" ) );
-        Menu::UseW = w_menu->AddCheckbox( MenuString( "Use (W)" ), MenuConfig( "katarina.use.w" ), true );
+        const auto w_menu = Menu::Root->AddMenu( MenuString( "[W] Preparation" ), MenuConfig( "Preparation" ) );
+        Menu::UseW = w_menu->AddCheckbox( MenuString( "Use [W]" ), MenuConfig( "katarina.use.w" ), true );
         Menu::FleeW = w_menu->AddCheckbox( MenuString( "- Flee" ), MenuConfig( "katarina.use.w.flee" ), true );
 
-        const auto e_menu = Menu::Root->AddMenu( MenuString( "(E) Shunpo" ), MenuConfig( "Shunpo" ) );
-        Menu::UseE = e_menu->AddCheckbox( MenuString( "Use (E)" ), MenuConfig( "katarina.use.e" ), true );
+        const auto e_menu = Menu::Root->AddMenu( MenuString( "[E] Shunpo" ), MenuConfig( "Shunpo" ) );
+        Menu::UseE = e_menu->AddCheckbox( MenuString( "Use [E]" ), MenuConfig( "katarina.use.e" ), true );
         Menu::FleeE = e_menu->AddCheckbox( MenuString( "- Flee" ), MenuConfig( "katarina.use.e.flee" ), true );
         
         Vector<CompileTimeString<char, 64>> shunpo_mode_items;
         shunpo_mode_items.push_back( MenuString( "Front" ) );
         shunpo_mode_items.push_back( MenuString( "Behind" ) );
-        shunpo_mode_items.push_back( MenuString( "Auto (Beta)" ) );
+        shunpo_mode_items.push_back( MenuString( "Auto" ) );
         Menu::ShunpoMode = e_menu->AddDropdown( MenuString( "- Position:" ), MenuConfig( "katarina.e.where" ), shunpo_mode_items, 0 );
 
         Menu::DiveE = e_menu->AddKeybind( MenuString( "- Turret Dive" ), MenuConfig( "katarina.dive.e" ), 'T', true, true );
         Menu::DrawE = e_menu->AddCheckbox( MenuString( "- Draw Range" ), MenuConfig( "katarina.e.draw" ), true );
 
-        const auto r_menu = Menu::Root->AddMenu( MenuString( "(R) Death Lotus" ), MenuConfig( "DeathLotus" ) );
-        Menu::UseR = r_menu->AddCheckbox( MenuString( "Use (R)" ), MenuConfig( "katarina.use.r" ), true );
-
-        Vector<CompileTimeString<char, 64>> ult_mode_items;
-        ult_mode_items.push_back( MenuString( "Always" ) );
-        ult_mode_items.push_back( MenuString( "Killable" ) );
-        Menu::UltMode = r_menu->AddDropdown( MenuString( "- Use When:" ), MenuConfig( "katarina.r.when" ), ult_mode_items, 0 );
-
+        const auto r_menu = Menu::Root->AddMenu( MenuString( "[R] Death Lotus" ), MenuConfig( "DeathLotus" ) );
+        Menu::UseR = r_menu->AddCheckbox( MenuString( "Use [R]" ), MenuConfig( "katarina.use.r" ), true );
+        Menu::RKillable = r_menu->AddCheckbox( MenuString( "- Only if Can Kill" ), MenuConfig( "katarina.r.killable" ), false );
+        
         Menu::AutoR = r_menu->AddSlider( MenuString( "- Auto use if # in Range" ), MenuConfig( "katarina.auto.r" ), 1, 6, 3, 0, 1 );
-        Menu::Channel = r_menu->AddSlider( MenuString( "- Channel Time (Dmg Calc)" ), MenuConfig( "katarina.r.channel" ), 0.0, 2.5, 2.0, 1, .1 );
+        Menu::Channel = r_menu->AddSlider( MenuString( "- Channel Time [Dmg Calc]" ), MenuConfig( "katarina.r.channel" ), 0.0, 2.5, 2.0, 1, .1 );
         Menu::Cancel = r_menu->AddCheckbox( MenuString( "- Cancel if None in Range" ), MenuConfig( "katarina.use.r.cancel" ), true );
         Menu::DrawR = r_menu->AddCheckbox( MenuString( "- Draw Range" ), MenuConfig( "katarina.r.draw" ), true );
-
-        Menu::Root->AddSeparator( MenuString( "Misc" ) );
-        Menu::UseIgnite = Menu::Root->AddCheckbox( MenuString( "Use Ignite" ), MenuConfig( "katarina.use.ignite" ), true );
-        Menu::UseItems = Menu::Root->AddCheckbox( MenuString( "Use Rocketbelt" ), MenuConfig( "katarina.use.items" ), true );
+        
+        auto misc = Menu::Root->AddMenu( MenuString("[Other] Misc"), MenuConfig( "Misc.Other" ) );
+        
+        Menu::UseItems = misc->AddCheckbox( MenuString( "Rocketbelt" ), MenuConfig( "katarina.use.items" ), true );
         //Menu::Killsteal = Menu::Root->AddCheckbox( MenuString( "Killsteal" ), MenuConfig( "katarina.ks" ), false );
         //Menu::Killsteal->SetTooltipName( TooltipString( "Soon" ) );
         
         Vector<CompileTimeString<char, 64>> spell_priority;
         spell_priority.push_back( MenuString( "E -> Q" ) );
         spell_priority.push_back( MenuString( "Q -> E" ) );
-        Menu::Toggle = Menu::Root->AddKeybind( MenuString( "Combo Toggle" ), MenuConfig( "katarina.toggle" ), 'X', true );
-        Menu::DrawHPBar = Menu::Root->AddCheckbox( MenuString( "HPBarFill Draw" ), MenuConfig( "katarina.r.draw.hp" ), true );
+        Menu::Toggle = misc->AddKeybind( MenuString( "Combo Toggle" ), MenuConfig( "katarina.toggle" ), 'X', true );
+        Menu::DrawHPBar = misc->AddCheckbox( MenuString( "HPBarFill Draw" ), MenuConfig( "katarina.r.draw.hp" ), true );
         
-        Menu::Root->AddSeparator( MenuString( "EzSeries v0.60" ) );
+        Menu::Root->AddSeparator( MenuString( "EzSeries v0.61" ) );
     }
 
 #pragma endregion

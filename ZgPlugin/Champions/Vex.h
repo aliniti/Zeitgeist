@@ -61,40 +61,4 @@ namespace Vex
         inline MenuElement* HxR;
         inline MenuElement* Ignite;
     }
-
-    namespace Debug
-    {
-        inline MenuElement* QDelay;
-        inline MenuElement* QWidth;
-        inline MenuElement* QSpeed;
-        inline MenuElement* QRange;
-        inline MenuElement* QRadius;
-        inline MenuElement* QHitBox;
-        inline MenuElement* QChance;
-
-        inline MenuElement* Q2Delay;
-        inline MenuElement* Q2Width;
-        inline MenuElement* Q2Speed;
-        inline MenuElement* Q2Range;
-        inline MenuElement* Q2Radius;
-        inline MenuElement* Q2HitBox;
-        inline MenuElement* Q2Chance;
-        
-        inline MenuElement* EDelay;
-        inline MenuElement* EWidth;
-        inline MenuElement* ESpeed;
-        inline MenuElement* ERange;
-        inline MenuElement* ERadius;
-        inline MenuElement* EHitBox;
-        inline MenuElement* EChance;
-
-        inline MenuElement* RDelay;
-        inline MenuElement* RWidth;
-        inline MenuElement* RSpeed;
-        inline MenuElement* RRange;
-        inline MenuElement* RRadius;
-        inline MenuElement* RHitBox;
-        inline MenuElement* RChance;
-        
-    }
 };
