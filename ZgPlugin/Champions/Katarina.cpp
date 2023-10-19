@@ -108,7 +108,7 @@ namespace Katarina
         if ( Spinning(  ) && Menu::UseR->Enabled(  ))
         {
             auto target = g_pExportedTargetSelector->GetTarget( KatE->Range(  ), true );
-            if ( target != nullptr && CanPostExecute( target ) && Utils->IsValidTarget( target ))
+            if ( target != nullptr && CanPostExecute( target ) && GUtils->IsValidTarget( target ))
             {
                 if (g_pExportedOrbwalker->GetMode( OrbwalkerMode::Combo )->Enabled(  ))
                 {
@@ -125,11 +125,11 @@ namespace Katarina
                 }
             }
 
-            if ( Utils->CountEnemiesInRange( 500 ) < 1 && Menu::Cancel->Enabled( ) )
+            if ( GUtils->CountEnemiesInRange( 500 ) < 1 && Menu::Cancel->Enabled( ) )
             {
                 auto pos = g_pExportedHudManager->CursorPositionUnclipped( );
                 auto new_pos = GetPlayer(  )->Position(  ).Extend( *pos, GetPlayer(  )->BoundingRadius(  ) + 400);
-                GetPlayer( )->IssueMoveOrder( &new_pos, false, false, true, true, &Limiter );
+                GetPlayer( )->IssueMoveOrder( &new_pos, false, false, true, true, &GLimiter );
                 
             }
         }
@@ -201,7 +201,7 @@ namespace Katarina
     
     void Auto( )
     {
-        if ( Utils->CountEnemiesInRange( 550 ) >= Menu::AutoR->Value(  ) )  
+        if ( GUtils->CountEnemiesInRange( 550 ) >= Menu::AutoR->Value(  ) )  
         {
             if ( Menu::UseR->Enabled(  ) &&  KatR->IsReady(  ) && !Spinning(  ))
             {
@@ -251,7 +251,7 @@ namespace Katarina
         if ( g_pExportedOrbwalker->GetMode( OrbwalkerMode::Harass )->Enabled( ) )
         {
             // - dont harass under turret
-            if ( !Utils->UnderEnemyTurret( ) )
+            if ( !GUtils->UnderEnemyTurret( ) )
             {
                 if ( !Spinning(  ) )
                 {
@@ -264,7 +264,7 @@ namespace Katarina
         if (g_pExportedOrbwalker->GetMode( OrbwalkerMode::LaneClear )->Enabled( ))
         {
             // - dont harass under turret
-            if ( !Utils->UnderEnemyTurret( ) )
+            if ( !GUtils->UnderEnemyTurret( ) )
             {
                 if ( !Spinning(  ) )
                 {
@@ -283,7 +283,7 @@ namespace Katarina
             {
                 for ( auto i : g_pExportedEntityManager->Minions( ) )
                 {
-                    if ( Utils->IsValidTarget( i, KatQ->Range(  ) ) && DaggerDmg( i ) >= i->Health( ) )
+                    if ( GUtils->IsValidTarget( i, KatQ->Range(  ) ) && DaggerDmg( i ) >= i->Health( ) )
                     {
                         KatQ->Cast( i );
                     }
@@ -297,7 +297,7 @@ namespace Katarina
             {
                 for ( auto i : g_pExportedEntityManager->Minions( ) )
                 {
-                    if ( Utils->IsValidTarget( i, KatQ->Range(  ) ) && DaggerDmg( i ) >= i->Health( ) )
+                    if ( GUtils->IsValidTarget( i, KatQ->Range(  ) ) && DaggerDmg( i ) >= i->Health( ) )
                     {
                         KatQ->Cast( i );
                     }
@@ -346,7 +346,7 @@ namespace Katarina
         // - bounding blades
         if ( KatQ->IsReady( ) && Menu::UseQ->Enabled( ) )
         {
-            if ( unit != nullptr && Utils->IsValidTarget( unit, KatQ->Range(  ) ) )
+            if ( unit != nullptr && GUtils->IsValidTarget( unit, KatQ->Range(  ) ) )
             {
                 KatQ->Cast( unit ) ;
             }
@@ -358,7 +358,7 @@ namespace Katarina
         // - preparation
         if ( KatW->IsReady( ) && Menu::UseW->Enabled( ) )
         {
-            if ( unit != nullptr && Utils->IsValidTarget( unit, KatW->Range(  ) ) )
+            if ( unit != nullptr && GUtils->IsValidTarget( unit, KatW->Range(  ) ) )
             {
                 if ( !KatQ->IsReady( ) || !Menu::UseQ->Enabled(  ) )
                 {
@@ -373,10 +373,10 @@ namespace Katarina
         // - shunpo target
         if ( KatE->IsReady( ) && Menu::UseE->Enabled( ) )
         {
-            if ( unit != nullptr && Utils->IsValidTarget( unit, range ) )
+            if ( unit != nullptr && GUtils->IsValidTarget( unit, range ) )
             {
                 auto pos = ShunpoPosition( unit );
-                if ( pos.IsValid( ) && ( !Utils->UnderEnemyTurret( pos ) || Menu::DiveE->Enabled( ) || CanPostExecute( unit ) ) )
+                if ( pos.IsValid( ) && ( !GUtils->UnderEnemyTurret( pos ) || Menu::DiveE->Enabled( ) || CanPostExecute( unit ) ) )
                 {
                     if ( CanPostExecute( unit ) || GetPlayer( )->DistanceXZ( pos ) > GetPlayer( )->CharacterIntermediate( )->AttackRange( ) + 15 )
                     {
@@ -393,7 +393,7 @@ namespace Katarina
         if ( KatR->IsReady( ) && Menu::UseR->Enabled( ) )
         {
             // - check validity
-            if ( unit == nullptr || !Utils->IsValidTarget( unit, KatR->Range( ) ) )
+            if ( unit == nullptr || !GUtils->IsValidTarget( unit, KatR->Range( ) ) )
                 return;
 
             // - ult if killable or always
@@ -414,7 +414,7 @@ namespace Katarina
             if ( unit != nullptr  )
             {
                 const auto pos = ShunpoPosition( unit, false );
-                if ( pos.IsValid( ) && ( !Utils->UnderEnemyTurret( pos ) || Menu::DiveE->Enabled( ) || CanPostExecute( unit ) ) )
+                if ( pos.IsValid( ) && ( !GUtils->UnderEnemyTurret( pos ) || Menu::DiveE->Enabled( ) || CanPostExecute( unit ) ) )
                 {
                     if ( GetPlayer( )->DistanceXZ( pos ) > KatW->Range(  ) )
                     {
@@ -432,7 +432,7 @@ namespace Katarina
     {
         if ( Ignite != nullptr && Ignite->IsReady(  ) && Menu::UseIgnite->Enabled(  ))
         {
-            if ( unit != nullptr && Utils->IsValidTarget( unit, 600 ) )
+            if ( unit != nullptr && GUtils->IsValidTarget( unit, 600 ) )
             {
                 if ( CanPreExecute( unit ) )
                 {
@@ -450,7 +450,7 @@ namespace Katarina
             if ( GetPlayer(  )->Spellbook(  )->CanUseSpell( pSlot ) )
             {
                 auto unit = g_pExportedTargetSelector->GetTarget( range + 275 );
-                if ( unit != nullptr && Utils->IsValidTarget( unit, range + 275  ) )
+                if ( unit != nullptr && GUtils->IsValidTarget( unit, range + 275  ) )
                 {
                     auto pos = unit->Position(  );
                     GetPlayer(  )->Spellbook(  )->SendSpellCastPacket( pSlot, &pos, &pos, nullptr);
@@ -820,7 +820,7 @@ namespace Katarina
         Menu::Toggle = Menu::Root->AddKeybind( MenuString( "Combo Toggle" ), MenuConfig( "katarina.toggle" ), 'X', true );
         Menu::DrawHPBar = Menu::Root->AddCheckbox( MenuString( "HPBarFill Draw" ), MenuConfig( "katarina.r.draw.hp" ), true );
         
-        Menu::Root->AddSeparator( MenuString( "EzSeries v0.56" ) );
+        Menu::Root->AddSeparator( MenuString( "EzSeries v0.60" ) );
     }
 
 #pragma endregion

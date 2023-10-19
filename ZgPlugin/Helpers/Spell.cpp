@@ -116,6 +116,25 @@ auto Spell::SetRange( float range ) -> void
     this->range = range;
 }
 
+auto Spell::SetDelay( float delay ) -> void
+{
+    this->delay = delay;
+}
+auto Spell::SetSpeed( float speed ) -> void
+{
+    this->speed = speed;
+}
+
+auto Spell::SetRadius( float radius ) -> void
+{
+    this->radius = radius;
+}
+
+auto Spell::SetHitBox( bool hitbox ) -> void
+{
+    this->hitbox = hitbox;
+}
+
 auto Spell::RunPrediction( GameObject* unit, PredictionOutput& output ) const -> bool
 {
     if ( !unit ) return false;
@@ -153,4 +172,9 @@ auto Spell::RunPrediction( GameObject* from, GameObject* unit, PredictionOutput&
     };
     
     return g_pExportedPrediction->GetPrediction( unit, input, output );
+}
+
+auto Spell::HitBox( ) -> bool
+{
+    return this->hitbox;
 }

@@ -7,18 +7,21 @@ namespace Vex
         SetupMenu( );
 
         VexQ = new Spell( Q, 550.f );
-        VexQ->SetSkillShot( 0.15f, 600.f, 180.f, false, PredictionCollisionFlags::Windwall );
+        VexQ->SetSkillShot( 0.25f, 600.f, 180.f, true, PredictionCollisionFlags::Windwall );
+        VexQ->SetHitBox( true );
 
         VexX = new Spell( Q, 1200.f );
-        VexX->SetSkillShot( 0.4f, 3200.f, 180.f, true, PredictionCollisionFlags::Windwall );
+        VexX->SetSkillShot( 0.80f, 3200.f, 100.f, true, PredictionCollisionFlags::Windwall );
+        VexX->SetHitBox( true );
 
-        VexW = new Spell( W, 450.f );
+        VexW = new Spell( W, 475.f );
 
-        VexE = new Spell( E, 800.f);
-        VexE->SetSkillShot( 0.25f, 1300.f, 300.f, false, PredictionCollisionFlags::None );
+        VexE = new Spell( E, 1000.f);
+        VexE->SetSkillShot( 1.1f, 0.f, 200.f, false, PredictionCollisionFlags::None );
 
         VexR = new Spell( R );
-        VexR->SetSkillShot( 0.25f, 1600.f, 130.f, true, PredictionCollisionFlags::Heroes | PredictionCollisionFlags::Windwall );
+        VexR->SetSkillShot( 0.25f, 1600.f, 100.f, true, PredictionCollisionFlags::Heroes | PredictionCollisionFlags::Windwall );
+        VexR->SetHitBox( true );
 
         if ( GetPlayer( )->Spellbook( )->GetSpell( Summoner1 )->SpellData( )->Hash( ) == FNV1A32CI( "SummonerDot" ) )
             Ignite = new Spell( Summoner1, 600.f );
@@ -43,7 +46,10 @@ namespace Vex
             {
                 g_pExportedRenderer->GetCurrentDrawList( )->AddCircle( GetPlayer( )->Position( ), VexQ->Range( ), 6, RGBA( 0, 0, 0, q_opa ) );
                 g_pExportedRenderer->GetCurrentDrawList( )->AddCircle( GetPlayer( )->Position( ), VexQ->Range( ), 3, RGBA( 255, 20, 255, q_opa ) );
-
+            }
+            
+            if ( Menu::DrawX->Enabled( ) && GetPlayer( )->Spellbook( )->GetSpell( Q )->Level( ) > 0 )
+            {
                 g_pExportedRenderer->GetCurrentDrawList( )->AddCircle( GetPlayer( )->Position( ), VexX->Range( ), 6, RGBA( 0, 0, 0, q_opa ) );
                 g_pExportedRenderer->GetCurrentDrawList( )->AddCircle( GetPlayer( )->Position( ), VexX->Range( ), 3, RGBA( 255, 20, 255, q_opa ) );
             }
@@ -105,7 +111,31 @@ namespace Vex
 
     void Auto( )
     {
-        if ( Utils->CountEnemiesInRange( VexW->Range( ) ) >= Menu::AutoW->Value( ) )
+        VexQ->SetDelay( Debug::QDelay->Value(  ) );
+        VexQ->SetSpeed( Debug::QSpeed->Value(  ) );
+        VexQ->SetRadius( Debug::QRadius->Value(  ) );
+        VexQ->SetRange( Debug::QRange->Value(  ) );
+        VexQ->SetHitBox( Debug::QHitBox->Enabled(  ) );
+
+        VexX->SetDelay( Debug::Q2Delay->Value(  ) );
+        VexX->SetSpeed( Debug::Q2Speed->Value(  ) );
+        VexX->SetRadius( Debug::Q2Radius->Value(  ) );
+        VexX->SetRange( Debug::Q2Range->Value(  ) );
+        VexX->SetHitBox( Debug::Q2HitBox->Enabled(  ) );
+
+        VexE->SetDelay( Debug::EDelay->Value(  ) );
+        VexE->SetSpeed( Debug::ESpeed->Value(  ) );
+        VexE->SetRadius( Debug::ERadius->Value(  ) );
+        VexE->SetRange( Debug::ERange->Value(  ) );
+        VexE->SetHitBox( Debug::EHitBox->Enabled(  ) );
+
+        VexR->SetDelay( Debug::RDelay->Value(  ) );
+        VexR->SetSpeed( Debug::RSpeed->Value(  ) );
+        VexR->SetRadius( Debug::RRadius->Value(  ) );
+        VexR->SetRange( Debug::RRange->Value(  ) );
+        VexR->SetHitBox( Debug::RHitBox->Enabled(  ) );
+        
+        if ( GUtils->CountEnemiesInRange( VexW->Range( ) ) >= Menu::AutoW->Value( ) )
         {
             if ( Menu::UseW->Enabled( ) && VexW->IsReady( ) )
             {
@@ -123,11 +153,11 @@ namespace Vex
     {
         if ( g_pExportedOrbwalker->GetMode( OrbwalkerMode::Combo )->Enabled( ) )
         {
-            UseR( g_pExportedTargetSelector->GetTarget( VexR->Range( ), true ), Menu::HxR->Value( ) );
-            UseW( g_pExportedTargetSelector->GetTarget( VexW->Range( ), true ) );
-            UseE( g_pExportedTargetSelector->GetTarget( VexX->Range(  ) , false ), Menu::HxComboE->Value(  ) );
-            UseQ( g_pExportedTargetSelector->GetTarget( VexQ->Range( ), false ), Menu::HxComboQ->Value( ) );
-            UseX( g_pExportedTargetSelector->GetTarget( VexX->Range( ), true ), Menu::HxComboQ->Value( ) );
+            UseW( g_pExportedTargetSelector->GetTarget( VexW->Range( ), VexW->HitBox(  ) ) );
+            UseR( g_pExportedTargetSelector->GetTarget( VexR->Range( ), VexR->HitBox(  ) ), Debug::RChance->Value(  ) );
+            UseE( g_pExportedTargetSelector->GetTarget( VexE->Range( ), VexE->HitBox(  ) ), Debug::EChance->Value(  ) );
+            UseQ( g_pExportedTargetSelector->GetTarget( VexQ->Range( ), VexQ->HitBox(  ) ), Debug::QChance->Value(  ) );
+            UseX( g_pExportedTargetSelector->GetTarget( VexX->Range( ), VexX->HitBox(  ) ), Debug::Q2Chance->Value(  ) );
             UseIgnite( g_pExportedTargetSelector->GetTarget( VexX->Range( ) ) );
         }
     }
@@ -138,8 +168,9 @@ namespace Vex
         {
             if ( GetPlayer( )->PAR( ) / GetPlayer( )->MaxPAR( ) * 100 > 55 )
             {
-                UseQ( g_pExportedTargetSelector->GetTarget( VexQ->Range( ), false ), Menu::HxHarassQ->Value( ) );
-                UseX( g_pExportedTargetSelector->GetTarget( VexX->Range( ), true ), Menu::HxHarassQ->Value( ) );
+                UseE( g_pExportedTargetSelector->GetTarget( VexE->Range( ), VexE->HitBox(  ) ), 0 );
+                UseQ( g_pExportedTargetSelector->GetTarget( VexQ->Range( ), VexQ->HitBox(  ) ), 1.00 );
+                UseX( g_pExportedTargetSelector->GetTarget( VexX->Range( ), VexX->HitBox(  ) ), 1.00 );
             }
         }
     }
@@ -149,13 +180,13 @@ namespace Vex
         if (g_pExportedOrbwalker->GetMode( OrbwalkerMode::LaneClear )->Enabled(  ) )
         {
             auto has_mana = GetPlayer(  )->PAR(  ) / GetPlayer(  )->MaxPAR(  ) * 100 > 75;
-            auto should = has_mana || Utils->CountEnemiesInRange( VexX->Range(  ) + 1000 ) < 1;
+            auto should = has_mana || GUtils->CountEnemiesInRange( VexX->Range(  ) + 1000 ) < 1;
         
             if (VexX->IsReady(  ) && Menu::ClearQ->Enabled(  ) && should )
             {
                 Vector<Vector3> minions; minions.clear(  );
                 for (auto i : g_pExportedEntityManager->Minions(  ))
-                    if (Utils->IsValidTarget( i, VexX->Range(  ) ) && QDmg( i ) >= i->Health(  ) )
+                    if (GUtils->IsValidTarget( i, VexX->Range(  ) ) && QDmg( i ) >= i->Health(  ) )
                         minions.push_back( i->Position(  ) );
 
                 Vector3 center; float radius;
@@ -171,13 +202,16 @@ namespace Vex
 
     void UseQ( GameObject* unit, float chance )
     {
+        if ( HoldSkills( unit ) )
+            return;
+        
         if ( VexQ->IsReady( ) && Menu::UseQ->Enabled( ) && unit != nullptr )
         {
-            if ( Utils->IsValidTarget( unit ) )
+            if ( GUtils->IsValidTarget( unit ) )
             {
                 if ( PredictionOutput output; VexQ->RunPrediction( unit, output ) )
                 {
-                    if ( output.m_flHitChance >= chance )
+                    if ( output.m_flHitChance >= chance  )
                     {
                         VexQ->Cast( output.m_vecCastPosition );
                     }
@@ -188,15 +222,24 @@ namespace Vex
 
     void UseX( GameObject* unit, float chance )
     {
-        if ( VexQ->IsReady( ) && Menu::UseExtendedQ->Enabled( ) && unit != nullptr )
+        if ( HoldSkills( unit ) )
+            return;
+        
+        if ( VexX->IsReady( ) && Menu::UseX->Enabled( ) && unit != nullptr )
         {
-            if ( Utils->IsValidTarget( unit ) )
+            if ( GUtils->IsValidTarget( unit ) )
             {
                 if ( PredictionOutput output; VexX->RunPrediction( unit, output ) )
                 {
-                    if ( output.m_flHitChance >= chance )
+                    if (GetPlayer(  )->DistanceXZ( output.m_vecCastPosition ) > VexQ->Range(  ))
                     {
-                        VexX->Cast( output.m_vecCastPosition );
+                        if ( output.m_flHitChance >= chance )
+                        {
+                            if (GetPlayer(  )->DistanceXZ( output.m_vecCastPosition ) <= VexX->Range(  ))
+                            {
+                                VexX->Cast( output.m_vecCastPosition );
+                            }
+                        }
                     }
                 }
             }
@@ -205,9 +248,12 @@ namespace Vex
 
     void UseW( GameObject* unit )
     {
+        if ( HoldSkills( unit ) )
+            return;
+        
         if ( unit != nullptr && VexW->IsReady( ) && Menu::UseW->Enabled( ) )
         {
-            if ( Utils->IsValidTarget( unit, VexW->Range( ) ) )
+            if ( GUtils->IsValidTarget( unit, VexW->Range( ) ) )
             {
                 VexW->Cast( );
             }
@@ -216,15 +262,21 @@ namespace Vex
 
     void UseE( GameObject* unit, float chance )
     {
+        if ( HoldSkills( unit ) )
+            return;
+        
         if ( VexE->IsReady( ) && Menu::UseE->Enabled( ) && unit != nullptr )
         {
-            if ( Utils->IsValidTarget( unit ) )
+            if ( GUtils->IsValidTarget( unit ) )
             {
                 if ( PredictionOutput output; VexE->RunPrediction( unit, output ) )
                 {
                     if ( output.m_flHitChance >= chance )
                     {
-                        VexE->Cast( output.m_vecCastPosition );
+                        if (GetPlayer(  )->DistanceXZ( output.m_vecCastPosition ) <= VexE->Range(  ))
+                        {
+                            VexE->Cast( output.m_vecCastPosition );
+                        }
                     }
                 }
             }
@@ -233,9 +285,12 @@ namespace Vex
 
     void UseR( GameObject* unit, float chance, bool semi )
     {
+        if ( HoldSkills( unit ) )
+            return;
+        
         if ( unit != nullptr && VexR->IsReady( ) && ( Menu::UseR->Enabled( ) || semi ) )
         {
-            if ( Utils->IsValidTarget( unit, VexR->Range( ) ) )
+            if ( GUtils->IsValidTarget( unit, VexR->Range( ) ) )
             {
                 if ( VexR->Hash( ) == FNV1A32CI( "VexR" ) )
                 {
@@ -263,9 +318,12 @@ namespace Vex
 
     void UseIgnite( GameObject* unit )
     {
+        if ( HoldSkills( unit ) )
+            return;
+        
         if ( Ignite != nullptr && Ignite->IsReady( ) && Menu::Ignite->Enabled( ) )
         {
-            if ( unit != nullptr && Utils->IsValidTarget( unit, 600 ) )
+            if ( unit != nullptr && GUtils->IsValidTarget( unit, 600 ) )
             {
                 if ( CanPreExecute( unit ) )
                 {
@@ -273,6 +331,17 @@ namespace Vex
                 }
             }
         }
+    }
+
+    bool HoldSkills( GameObject* unit )
+    {
+        if (!unit) return false;
+        
+        auto aa = g_pExportedDamage->GetAutoAttackDamage( GetPlayer(  ), unit, true ).m_flTotal;
+        auto dist = GetPlayer(  )->DistanceXZ( unit );
+        auto lethal = aa * 3 >= unit->Health(  );
+        
+        return  dist <= GetPlayer(  )->CharacterIntermediate(  )->AttackRange(  ) + 35 && lethal;
     }
 
     bool CanPreExecute( GameObject* unit )
@@ -364,16 +433,50 @@ namespace Vex
     void SetupMenu( )
     {
         Menu::Root = g_pExportedMenu->AddMenu( "EzVex", MenuConfig( "EzSeries" ) );
+
+        // ------------- TEST
+        auto test = Menu::Root->AddMenu( MenuString( "TEST" ), MenuConfig("TEST") );
+
+        Debug::QChance = test->AddSlider( MenuString( "(Q) Hitchance" ), MenuConfig( "test.q.chance" ), 0.00, 1.00, 0.00, 2, .01 );
+        Debug::QHitBox = test->AddCheckbox( MenuString( "(Q) Include HitBox" ), MenuConfig( "test.q.hitbox" ), true );
+        Debug::QDelay = test->AddSlider( MenuString( "(Q) Delay" ), MenuConfig( "test.q.delay" ), 0.00, 2.00, 0.25, 2, .01 );
+        Debug::QSpeed = test->AddSlider( MenuString( "(Q) Speed" ), MenuConfig( "test.q.speed" ), 0.00, 3200.00, 600.00, 2, .01 );
+        Debug::QRadius = test->AddSlider( MenuString( "(Q) Radius" ), MenuConfig( "test.q.radius" ), 0.00, 500.00, 180.00, 2, .01 );
+        Debug::QRange = test->AddSlider( MenuString( "(Q) Range" ), MenuConfig( "test.q.range" ), 0.00, 3000.00, 550.00, 2, .01 );
+        test->AddSeparator( MenuString( "-----" ) );
+        Debug::Q2Chance = test->AddSlider( MenuString( "(Q2) Hitchance" ), MenuConfig( "test.q2.chance" ), 0.00, 1.00, 0.00, 2, .01 );
+        Debug::Q2HitBox = test->AddCheckbox( MenuString( "(Q2) Include HitBox" ), MenuConfig( "test.q2.hitbox" ), true );
+        Debug::Q2Delay = test->AddSlider( MenuString( "(Q2) Delay" ), MenuConfig( "test.q2.delay" ), 0.00, 2.00, 0.45, 2, .01 );
+        Debug::Q2Speed = test->AddSlider( MenuString( "(Q2) Speed" ), MenuConfig( "test.q2.speed" ), 0.00, 3200.00, 3200.00, 2, .01 );
+        Debug::Q2Radius = test->AddSlider( MenuString( "(Q2) Radius" ), MenuConfig( "test.q2.radius" ), 0.00, 500.00, 180.00, 2, .01 );
+        Debug::Q2Range = test->AddSlider( MenuString( "(Q2) Range" ), MenuConfig( "test.q2.range" ), 0.00, 3000.00, 1200.00, 2, .01 );
+        test->AddSeparator( MenuString( "-----" ) );
+        Debug::EChance = test->AddSlider( MenuString( "(E) Hitchance" ), MenuConfig( "test.e.chance" ), 0.00, 1.00, 0.00, 2, .01 );
+        Debug::EHitBox = test->AddCheckbox( MenuString( "(E) Include HitBox" ), MenuConfig( "test.e.hitbox" ), true );
+        Debug::EDelay = test->AddSlider( MenuString( "(E) Delay" ), MenuConfig( "test.e.delay" ), 0.00, 2.00, 0.25, 2, .01 );
+        Debug::ESpeed = test->AddSlider( MenuString( "(E) Speed" ), MenuConfig( "test.e.speed" ), 0.00, 3200.00, 1300.00, 2, .01 );
+        Debug::ERadius = test->AddSlider( MenuString( "(E) Radius" ), MenuConfig( "test.e.radius" ), 0.00, 500.00, 200.00, 2, .01 );
+        Debug::ERange = test->AddSlider( MenuString( "(E) Range" ), MenuConfig( "test.e.range" ), 0.00, 3000.00, 800.00, 2, .01 );
+
+        test->AddSeparator( MenuString( "-----" ) );
+        Debug::RChance = test->AddSlider( MenuString( "(R) Hitchance" ), MenuConfig( "test.r.chance" ), 0.00, 1.00, 0.00, 2, .01 );
+        Debug::RHitBox = test->AddCheckbox( MenuString( "(R) Include HitBox" ), MenuConfig( "test.r.hitbox" ), true );
+        Debug::RDelay = test->AddSlider( MenuString( "(R) Delay" ), MenuConfig( "test.r.delay" ), 0.00, 2.00, 0.25, 2, .01 );
+        Debug::RSpeed = test->AddSlider( MenuString( "(R) Speed" ), MenuConfig( "test.r.speed" ), 0.00, 3200.00, 1600.00, 2, .01 );
+        Debug::RRadius = test->AddSlider( MenuString( "(R) Radius" ), MenuConfig( "test.r.radius" ), 0.00, 500.00, 130.00, 2, .01 );
+        Debug::RRange = test->AddSlider( MenuString( "(R) Range" ), MenuConfig( "test.r.range" ), 0.00, 3000.00, 2000.00, 2, .01 );
+        // -----------
+
+        
         Menu::Root->AddSeparator( MenuString( "Spells" ) );
 
         const auto q_menu = Menu::Root->AddMenu( MenuString( "(Q) Mistral Bolt " ), MenuConfig( "MistralBolt" ) );
         Menu::UseQ = q_menu->AddCheckbox( MenuString( "Use (Q)" ), MenuConfig( "vex.use.q" ), true );
-        Menu::UseExtendedQ = q_menu->AddCheckbox( MenuString( "Use Extended (Q)" ), MenuConfig( "vex.use.q.extended" ), true );
-        Menu::HxComboQ = q_menu->AddSlider( MenuString( "- Combo Hitchance" ), MenuConfig( "vex.q.combo.chance" ), 0.0, 1.00, 0.15, 2, .01 );
-        Menu::HxHarassQ = q_menu->AddSlider( MenuString( "- Harass Hitchance" ), MenuConfig( "vex.q.harass.chance" ), 0.0, 1.00, 0.25, 2, .01 );
         Menu::ClearQ = q_menu->AddCheckbox( MenuString( "- Smart Clear" ), MenuConfig( "vex.use.q.clear" ), true );
         Menu::DrawQ = q_menu->AddCheckbox( MenuString( "- Draw" ), MenuConfig( "vex.draw.q" ), true );
-
+        Menu::UseX = q_menu->AddCheckbox( MenuString( "Use Extended (Q)" ), MenuConfig( "vex.use.q.extended" ), true );
+        Menu::DrawX = q_menu->AddCheckbox( MenuString( "- Draw" ), MenuConfig( "vex.draw.x" ), false );
+        
         const auto w_menu = Menu::Root->AddMenu( MenuString( "(W) Personal Space " ), MenuConfig( "PersonalSpace" ) );
         Menu::UseW = w_menu->AddCheckbox( MenuString( "Use (W)" ), MenuConfig( "vex.use.w" ), true );
         Menu::AutoW = w_menu->AddSlider( MenuString( "- Auto use if # in range" ), MenuConfig( "vex.auto.w" ), 1, 5, 2, 0, 1 );
@@ -381,21 +484,21 @@ namespace Vex
 
         const auto e_menu = Menu::Root->AddMenu( MenuString( "(E) Looming Darkness" ), MenuConfig( "LoomingDarkness" ) );
         Menu::UseE = e_menu->AddCheckbox( MenuString( "Use (E)" ), MenuConfig( "vex.use.e" ), true );
-        Menu::HxComboE = e_menu->AddSlider( MenuString( "- Combo Hitchance" ), MenuConfig( "vex.e.combo.chance.x" ), 0.0, 1.00, 0.15, 2, .01 );
-        //Menu::HxHarassE = e_menu->AddSlider( MenuString( "- Harass Hitchance" ), MenuConfig( "vex.e.harass.chance.x" ), 0.0, 1.00, 0.25, 2, .01 );
+        // Menu::HxComboE = e_menu->AddSlider( MenuString( "- Combo Hitchance" ), MenuConfig( "vex.e.combo.chance.x" ), 0.0, 1.00, 0.15, 2, .01 );
+        // Menu::HxHarassE = e_menu->AddSlider( MenuString( "- Harass Hitchance" ), MenuConfig( "vex.e.harass.chance.x" ), 0.0, 1.00, 0.25, 2, .01 );
         Menu::DrawE = e_menu->AddCheckbox( MenuString( "- Draw" ), MenuConfig( "vex.draw.e" ), true );
 
         const auto r_menu = Menu::Root->AddMenu( MenuString( "(R) Shadow Surge " ), MenuConfig( "ShadowSurge" ) );
         Menu::UseR = r_menu->AddCheckbox( MenuString( "Use (R)" ), MenuConfig( "vex.use.r" ), true );
-        Menu::HxR = r_menu->AddSlider( MenuString( "- Combo Hitchance" ), MenuConfig( "vex.r.chance" ), 0.0, 1.00, 0.25, 2, .01 );
+        //Menu::HxR = r_menu->AddSlider( MenuString( "- Hitchance" ), MenuConfig( "vex.r.chance" ), 0.0, 1.00, 0.25, 2, .01 );
         Menu::DrawR = r_menu->AddCheckbox( MenuString( "- Draw" ), MenuConfig( "vex.draw.r" ), true );
-        Menu::SemiR = r_menu->AddKeybind( MenuString( "Semi Cast" ), MenuConfig( "vex.semi.r.key" ), 'G', true );
-        Menu::HxSemiR = r_menu->AddSlider( MenuString( "- Semi Hitchance" ), MenuConfig( "vex.semi.r.chance" ), 0.0, 1.00, 0.10, 2, .01 );
+        Menu::SemiR = r_menu->AddKeybind( MenuString( "Semi Cast" ), MenuConfig( "vex.semi.r.key" ), 'T', true );
+        Menu::HxSemiR = r_menu->AddSlider( MenuString( "- Hitchance" ), MenuConfig( "vex.semi.r.chance" ), 0.0, 1.00, 0.10, 2, .01 );
 
         Menu::Root->AddSeparator( MenuString( "Misc" ) );
         //Menu::HarassPct = Menu::Root->AddSlider( MenuString( "- Harass Min Mana (%)" ), MenuConfig( "vex.harass.mana" ), 0, 100, 65, 0, 1 );
         Menu::Ignite = Menu::Root->AddCheckbox( MenuString( "Use Ignite" ), MenuConfig( "vex.ignite" ), true );
-
-        Menu::Root->AddSeparator( MenuString( "EzSeries v0.56" ) );
+        
+        Menu::Root->AddSeparator( MenuString( "EzSeries v0.60" ) );
     }
 }

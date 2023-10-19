@@ -1,4 +1,5 @@
 #include "../stdafx.hpp"
 
-float Limiter = 0.f;
-Utility* Utils = new Utility();
+float GLimiter = 0.f;
+Utility* GUtils = new Utility();
+bool GDebug = true;

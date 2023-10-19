@@ -1,4 +1,5 @@
 #pragma once
 
-extern float Limiter;
-extern Utility* Utils;
+extern float GLimiter;
+extern Utility* GUtils;
+extern bool GDebug;

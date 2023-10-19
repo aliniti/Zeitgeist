@@ -12,12 +12,18 @@ public:
     auto Cast( ) -> void;
     auto Cast( GameObject* target ) -> void;
     auto Cast( Vector3 position ) -> void;
+    
     auto SetFrom( Vector3 pos ) -> void;
     auto SetRange( float range ) -> void;
+    auto SetDelay( float delay ) -> void;
+    auto SetSpeed( float speed ) -> void;
+    auto SetRadius( float radius ) -> void;
+    auto SetHitBox( bool hitbox ) -> void;
 
     auto RunPrediction( GameObject* unit, PredictionOutput& output ) const -> bool;
     auto RunPrediction( GameObject* from, GameObject* unit, PredictionOutput& output ) const -> bool;
 
+    auto HitBox( ) -> bool;
     auto Range( ) const -> float;
     auto Radius( ) const -> float;
     auto Level( ) const -> int;
