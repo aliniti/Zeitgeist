@@ -1,40 +1,27 @@
 #include "stdafx.hpp"
-
-// set to SDBM32CI("ChampionName") to load on a specific champion only
 extern "C" inline __declspec(dllexport) std::uint32_t g_iUniqueAssemblyName = 0;
 
-void OnGainBuff( GameObject* unit, BuffInstance* instance)
-{
-    switch ( GetPlayer( )->CharacterData( )->SkinHash( ) )
-    {
-        // case SDBM32CI( "Vex" ):
-        //     return Vex::OnGainBuff( unit, instance );
-        default: ;
-    } 
-}
-
-void OnCreateObject( GameObject* unit )
-{
-    switch ( GetPlayer( )->CharacterData( )->SkinHash( ) )
-    {
-        // case SDBM32CI( "Zed" ):
-        //     return Zedd::OnCreateObj( unit );
-        default: ;
-    } 
-}
-
+/**
+ * @brief This function is called when a particle is created.
+ * @param unit The unit.
+ * @param iHash The hash.
+ * @return void
+ */
 void OnCreateParticle( GameObject* unit, std::uint32_t iHash )
 {
     switch ( GetPlayer( )->CharacterData( )->SkinHash( ) )
     {
         case SDBM32CI( "Katarina" ):
             return Katarina::OnCreateParticle( unit, iHash );
-        // case SDBM32CI( "Zed" ):
-        //     return Zedd::OnCreateParticle( unit, iHash );
         default: ;
     }
 }
 
+
+/**
+ * @brief This function is called every frame to draw the plugin's content on the screen.
+ * @return void
+ */
 void OnDraw( )
 {
     switch ( GetPlayer( )->CharacterData( )->SkinHash( ) )
@@ -43,12 +30,14 @@ void OnDraw( )
             return Katarina::OnDraw( );
         case SDBM32CI( "Vex" ):
             return Vex::OnDraw( );
-        // case SDBM32CI( "Zed" ):
-        //     return Zedd::OnDraw( );
         default: ;
     }
 }
 
+/**
+ * @brief This function is called every frame to draw the plugin's content on the screen.
+ * @return void
+ */
 void OnPresentDraw( )
 {
     switch ( GetPlayer( )->CharacterData( )->SkinHash( ) )
@@ -57,12 +46,14 @@ void OnPresentDraw( )
             return Katarina::OnPresentDraw( );
         case SDBM32CI( "Vex" ):
             return Vex::OnPresentDraw( );
-        // case SDBM32CI( "Zed" ):
-        //     return Zedd::OnPresentDraw( );
         default: ;
     }
 }
 
+/**
+ * @brief Called every frame to update the plugin's logic.
+ * @return void
+ */
 void OnUpdate( )
 {
     switch ( GetPlayer( )->CharacterData( )->SkinHash( ) )
@@ -71,12 +62,14 @@ void OnUpdate( )
             return Katarina::OnUpdate( );
         case SDBM32CI( "Vex" ):
             return Vex::OnUpdate( );
-        // case SDBM32CI( "Zed" ):
-        //     return Zedd::OnUpdate( );    
         default: ;
     }
 }
 
+/**
+ * @brief Called when the plugin is loaded.
+ * @return void
+ */
 void OnBootPlugin( )
 {
     switch ( GetPlayer( )->CharacterData( )->SkinHash( ) )
@@ -85,12 +78,14 @@ void OnBootPlugin( )
             return Katarina::OnBoot( );
         case SDBM32CI( "Vex" ):
             return Vex::OnBoot( );
-        // case SDBM32CI( "Zed" ):
-        //     return Zedd::OnBoot( );       
         default: ;
     }
 }
 
+/**
+ * @brief Called when the plugin is unloaded.
+ * @return void
+ */
 void OnTerminatePlugin( )
 {
     switch ( GetPlayer( )->CharacterData( )->SkinHash( ) )
@@ -98,9 +93,7 @@ void OnTerminatePlugin( )
         case SDBM32CI( "Katarina" ):
             return Katarina::OnTerminate( );
         case SDBM32CI( "Vex" ):
-            return Vex::OnTerminate( );
-        // case SDBM32CI( "Zed" ):
-        //     return Zedd::OnTerminate( );               
+            return Vex::OnTerminate( );         
         default: ;
     }
 }
@@ -112,8 +105,6 @@ extern "C" bool __declspec(dllexport, noinline, code_seg(".tempc")) __stdcall Zg
     Globals::Allocate( );
     
     OnBootPlugin( );
-    g_pExportedEventHandler->Add( EventType::OnGainBuff, OnGainBuff );
-    g_pExportedEventHandler->Add( EventType::OnCreateObject, OnCreateObject );
     g_pExportedEventHandler->Add( EventType::OnCreateParticle, OnCreateParticle );
     g_pExportedEventHandler->Add( EventType::OnWorldDraw, OnDraw );
     g_pExportedEventHandler->Add( EventType::OnPresentDraw, OnPresentDraw );
@@ -124,8 +115,6 @@ extern "C" bool __declspec(dllexport, noinline, code_seg(".tempc")) __stdcall Zg
 extern "C" void __declspec(dllexport, noinline, code_seg(".text")) __stdcall ZgUnload( )
 {
     OnTerminatePlugin(  );
-    g_pExportedEventHandler->Remove( EventType::OnGainBuff, OnGainBuff );
-    g_pExportedEventHandler->Remove( EventType::OnCreateObject, OnCreateObject );
     g_pExportedEventHandler->Remove( EventType::OnCreateParticle, OnCreateParticle );
     g_pExportedEventHandler->Remove( EventType::OnWorldDraw, OnDraw );
     g_pExportedEventHandler->Remove( EventType::OnPresentDraw, OnPresentDraw );

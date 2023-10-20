@@ -772,7 +772,7 @@ namespace Katarina
         Menu::UseIgnite = Menu::Root->AddCheckbox( MenuString( "[Summoner] Ignite" ), MenuConfig( "katarina.use.ignite" ), true );
         
         const auto q_menu = Menu::Root->AddMenu( MenuString( "[Q] Bouncing Blade" ), MenuConfig( "BouncingBlade" ) );
-        Menu::UseQ = q_menu->AddCheckbox( MenuString( "Use [Q)" ), MenuConfig( "katarina.use.q" ), true );
+        Menu::UseQ = q_menu->AddCheckbox( MenuString( "Use [Q]" ), MenuConfig( "katarina.use.q" ), true );
         Menu::LastHitQ = q_menu->AddCheckbox( MenuString( "- Last Hit" ), MenuConfig( "katarina.last.hit.q" ), true );
         Menu::DaggerCalc = q_menu->AddSlider( MenuString( "- Daggers [Dmg Calc]" ), MenuConfig( "katarina.q.daggers" ), 0, 3, 2, 0, 1 );
         Menu::DaggerCalc->SetTooltipName( TooltipString( "Calculates as if # daggers near target." ) );
