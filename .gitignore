@@ -233,3 +233,4 @@ ZgPlugin/.idea/
 *.dll
 *.map
 ZgPlugin/Build/DevTool.zgp
+ZgPlugin/.vs/

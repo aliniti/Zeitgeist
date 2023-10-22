@@ -85,6 +85,7 @@ namespace Katarina
         inline MenuElement* UseE = nullptr;
         inline MenuElement* FleeE = nullptr;
         inline MenuElement* DiveE = nullptr;
+        inline MenuElement* GapE = nullptr;
         inline MenuElement* UseR = nullptr;
         inline MenuElement* AutoR = nullptr;
         inline MenuElement* UseItems = nullptr;

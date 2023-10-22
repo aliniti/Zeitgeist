@@ -408,7 +408,7 @@ namespace Katarina
     void GapE( )
     {
         // - shunpo gap
-        if ( KatE->IsReady( ) && Menu::UseE->Enabled( ) )
+        if ( KatE->IsReady( ) && Menu::UseE->Enabled( ) && Menu::GapE->Enabled( ) )
         {
             auto unit = g_pExportedTargetSelector->GetTarget( KatE->Range(  ) *2, true );
             if ( unit != nullptr  )
@@ -459,7 +459,7 @@ namespace Katarina
         }
     }
     
-#pragma endregion
+    #pragma endregion
     
     // ░█▀▄░█▀█░█▀▀░█▀▀░█▀▀░█▀▄░█▀▀
     // ░█░█░█▀█░█░█░█░█░█▀▀░█▀▄░▀▀█
@@ -469,8 +469,8 @@ namespace Katarina
     void OnCreateParticle( GameObject* pObject, std::uint32_t iHash )
     {
         if ( pObject != nullptr )
-            if ( iHash == FNV1A32CI( "Katarina_Dagger_Ground_Indicator" ) )
-                Daggers.push_back( {.Obj = pObject, .Position = pObject->Position( ), .CreateTime = g_pExportedGlobalClocks->GameTime( ), } );
+            if ( iHash == FNV1A32CI( "Katarina_Dagger_Ground_Indicator" ) ) 
+                Daggers.push_back( { .Obj = pObject, .Position = pObject->Position( ), .CreateTime = g_pExportedGlobalClocks->GameTime( ), } );
     }
     
     void RenderDaggers()
@@ -601,7 +601,10 @@ namespace Katarina
                     pos = pObject->Position( ) + ( GetPlayer( )->Position( ) - pObject->Position( ) ).NormalizeXZ( ) * -135;
                     break;
                 case 2:
-                    auto pred = g_pExportedPrediction->CalculateIntercept( pObject, { .m_flDelay = g_pExportedNetClient->RoundTripLatency( ) / 1000 } );
+                    PredictionInput input = { };
+                    input.m_flDelay = g_pExportedNetClient->RoundTripLatency( ) / 1000;
+
+                    auto pred = g_pExportedPrediction->CalculateIntercept( pObject, input );
                     auto walk_to = pObject->Position( ).Extend( pred, 100 );
                     auto reverse = pObject->Position( ) + ( walk_to - pObject->Position( ) ).NormalizeXZ( ) * -135;
                     pos = reverse;
@@ -785,6 +788,8 @@ namespace Katarina
 
         const auto e_menu = Menu::Root->AddMenu( MenuString( "[E] Shunpo" ), MenuConfig( "Shunpo" ) );
         Menu::UseE = e_menu->AddCheckbox( MenuString( "Use [E]" ), MenuConfig( "katarina.use.e" ), true );
+        Menu::GapE = e_menu->AddCheckbox( MenuString( "- Gapclose [Dagger]" ), MenuConfig( "katarina.use.e.gap" ), false );
+        Menu::GapE->SetTooltipName( TooltipString( "Shunpo to a dagger for distance not damage." ) );
         Menu::FleeE = e_menu->AddCheckbox( MenuString( "- Flee" ), MenuConfig( "katarina.use.e.flee" ), true );
         
         Vector<CompileTimeString<char, 64>> shunpo_mode_items;
@@ -806,10 +811,8 @@ namespace Katarina
         Menu::DrawR = r_menu->AddCheckbox( MenuString( "- Draw Range" ), MenuConfig( "katarina.r.draw" ), true );
         
         auto misc = Menu::Root->AddMenu( MenuString("[Other] Misc"), MenuConfig( "Misc.Other" ) );
-        
+  
         Menu::UseItems = misc->AddCheckbox( MenuString( "Rocketbelt" ), MenuConfig( "katarina.use.items" ), true );
-        //Menu::Killsteal = Menu::Root->AddCheckbox( MenuString( "Killsteal" ), MenuConfig( "katarina.ks" ), false );
-        //Menu::Killsteal->SetTooltipName( TooltipString( "Soon" ) );
         
         Vector<CompileTimeString<char, 64>> spell_priority;
         spell_priority.push_back( MenuString( "E -> Q" ) );

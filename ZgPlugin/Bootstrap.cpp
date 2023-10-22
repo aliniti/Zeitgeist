@@ -1,10 +1,11 @@
 #include "stdafx.hpp"
 extern "C" inline __declspec(dllexport) std::uint32_t g_iUniqueAssemblyName = 0;
 
+
 /**
- * @brief This function is called when a particle is created.
- * @param unit The unit.
- * @param iHash The hash.
+ * @brief This function is called when a particle is created for a game object.
+ * @param unit The game object the particle is being created for.
+ * @param iHash The hash of the particle being created.
  * @return void
  */
 void OnCreateParticle( GameObject* unit, std::uint32_t iHash )
