@@ -38,6 +38,7 @@ namespace Zeitgeist::SdkImport {
 		inline float g_flDisplayHeight = 0.f;
 		inline std::uint32_t g_iMapId = 11;
 		inline bool g_bIsReplay = false;
+		inline bool g_bMatchmade = false;
 	}
 
 #pragma region Hashing
@@ -2288,12 +2289,13 @@ namespace Zeitgeist::SdkImport {
 		virtual GameObject* GetObjectByHandle(std::uint16_t iHandle) = 0;
 	};
 
-	inline class HudScoreboard* g_pExportedHudScoreboard;
-	class HudScoreboard {
+	inline class ScoreboardViewController* g_pExportedScoreboardViewController;
+	class ScoreboardViewController {
 	public:
 
 		virtual std::uint32_t* OrderedBlueNetworkIds() = 0;
 		virtual std::uint32_t* OrderedRedNetworkIds() = 0;
+		virtual bool IsOpen() = 0;
 	};
 
 	inline class GlobalClocks* g_pExportedGlobalClocks;
@@ -2688,6 +2690,7 @@ namespace Zeitgeist::SdkImport {
 	public:
 
 		virtual MenuElement* AddMenu(const CompileTimeString<char, 64>& stDisplayName, std::uint32_t iConfigHash) = 0;
+		virtual bool IsOpen() = 0;
 	};
 
 	enum PluginSdk : std::int32_t {
@@ -2835,12 +2838,29 @@ namespace Zeitgeist::SdkImport {
 			virtual Vector3 GetPosition(float flDelta = 0.f) = 0;
 		};
 
+		struct ContextSpell {
+			std::uint32_t m_iCharacter; // e.g SDBM32CI("Ezreal")
+			std::uint32_t m_iConfigHash; // unique hash for this spell, to be used as menu hash
+
+			CompileTimeString<char, 64> m_stCharacterName; // e.g "Ezreal"
+			CompileTimeString<char, 64> m_stDisplayName; // e.g "Q - Mystic Shot"
+		};
+
 		class Sdk {
+		public:
+
+			MenuElement* m_pToggled; // keybind
+			MenuElement* m_pDangerous; // keybind
+			MenuElement* m_pDangerousTreatAsHold; // checkbox
+			MenuElement* m_pCircular; // keybind
+			MenuElement* m_pCircularTreatAsHold; // checkbox
+
 		public:
 
 			virtual Vector<SpellCastInstance*>* ActiveSpellInstances() = 0;
 			virtual void* GetEvadeMethod(std::uint32_t iSpellHash) = 0;
 			virtual std::uint64_t ActiveEvadingBitmap() = 0;
+			virtual Vector<ContextSpell>* GetContextSpells() = 0;
 		};
 	};
 
@@ -2878,7 +2898,7 @@ namespace Zeitgeist::SdkImport {
 		Experience* m_pExperienceFactory = NULL;
 		AvatarClient* m_pAvatarClientFactory = NULL;
 		ObjectManager* m_pObjectManagerFactory = NULL;
-		HudScoreboard* m_pHudScoreboardFactory = NULL;
+		ScoreboardViewController* m_pScoreboardViewControllerFactory = NULL;
 		GlobalClocks* m_pGlobalClocksFactory = NULL;
 		NetClient* m_pNetClientFactory = NULL;
 		ControlStation* m_pControlStationFactory = NULL;
@@ -2948,7 +2968,7 @@ namespace Zeitgeist::SdkImport {
 			INITIALIZE_FACTORY(Experience);
 			INITIALIZE_FACTORY(AvatarClient);
 			INITIALIZE_FACTORY(ObjectManager);
-			INITIALIZE_FACTORY(HudScoreboard);
+			INITIALIZE_FACTORY(ScoreboardViewController);
 			INITIALIZE_FACTORY(GlobalClocks);
 			INITIALIZE_FACTORY(NetClient);
 			INITIALIZE_FACTORY(ControlStation);
@@ -2987,6 +3007,7 @@ namespace Zeitgeist::SdkImport {
 			Globals::g_flDisplayHeight = this->m_flDisplayHeight;
 			Globals::g_iMapId = this->m_iMapId;
 			Globals::g_bIsReplay = this->m_bIsReplay;
+			Globals::g_bMatchmade = this->m_bIsMatchmade;
 		}
 	};
 
