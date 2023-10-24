@@ -15,12 +15,11 @@ auto Utility::IsValidTarget( GameObject* pObject, float range ) -> bool
     return GetPlayer( )->DistanceXZ( pObject ) <= range;
 }
 
-auto Utility::IsOnSegment(Vector3 pos, Vector3 start, Vector3 end, float radius ) -> bool
+auto Utility::IsOnSegment( Vector3 pos, Vector3 start, Vector3 end, float radius ) -> bool
 {
-    Vector3 segment;
-    if (g_pExportedMath->IsOnSegment( pos, start, end, segment ))
+    if ( Vector3 segment; g_pExportedMath->IsOnSegment( pos, start, end, segment ) )
     {
-        if (pos.DistanceXZ( segment ) <= radius)
+        if ( pos.DistanceXZ( segment ) <= radius )
         {
             return true;
         }
@@ -94,6 +93,6 @@ auto Utility::CountEnemiesInRange( float range ) -> int
             units++;
         }
     }
-    
+
     return units;
 }
