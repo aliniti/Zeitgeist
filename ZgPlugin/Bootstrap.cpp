@@ -1,13 +1,6 @@
 #include "stdafx.hpp"
 extern "C" inline __declspec(dllexport) std::uint32_t g_iUniqueAssemblyName = 0;
 
-
-/**
- * @brief This function is called when a particle is created for a game object.
- * @param unit The game object the particle is being created for.
- * @param iHash The hash of the particle being created.
- * @return void
- */
 void OnCreateParticle( GameObject* unit, std::uint32_t iHash )
 {
     switch ( GetPlayer( )->CharacterData( )->SkinHash( ) )
@@ -18,11 +11,6 @@ void OnCreateParticle( GameObject* unit, std::uint32_t iHash )
     }
 }
 
-
-/**
- * @brief This function is called every frame to draw the plugin's content on the screen.
- * @return void
- */
 void OnDraw( )
 {
     switch ( GetPlayer( )->CharacterData( )->SkinHash( ) )
@@ -35,10 +23,6 @@ void OnDraw( )
     }
 }
 
-/**
- * @brief This function is called every frame to draw the plugin's content on the screen.
- * @return void
- */
 void OnPresentDraw( )
 {
     switch ( GetPlayer( )->CharacterData( )->SkinHash( ) )
@@ -51,10 +35,6 @@ void OnPresentDraw( )
     }
 }
 
-/**
- * @brief Called every frame to update the plugin's logic.
- * @return void
- */
 void OnUpdate( )
 {
     switch ( GetPlayer( )->CharacterData( )->SkinHash( ) )
@@ -67,10 +47,6 @@ void OnUpdate( )
     }
 }
 
-/**
- * @brief Called when the plugin is loaded.
- * @return void
- */
 void OnBootPlugin( )
 {
     switch ( GetPlayer( )->CharacterData( )->SkinHash( ) )
@@ -83,10 +59,6 @@ void OnBootPlugin( )
     }
 }
 
-/**
- * @brief Called when the plugin is unloaded.
- * @return void
- */
 void OnTerminatePlugin( )
 {
     switch ( GetPlayer( )->CharacterData( )->SkinHash( ) )
@@ -94,7 +66,7 @@ void OnTerminatePlugin( )
         case SDBM32CI( "Katarina" ):
             return Katarina::OnTerminate( );
         case SDBM32CI( "Vex" ):
-            return Vex::OnTerminate( );         
+            return Vex::OnTerminate( );
         default: ;
     }
 }
@@ -104,7 +76,7 @@ extern "C" bool __declspec(dllexport, noinline, code_seg(".tempc")) __stdcall Zg
 {
     pSdkContext->Initialize( );
     Globals::Allocate( );
-    
+
     OnBootPlugin( );
     g_pExportedEventHandler->Add( EventType::OnCreateParticle, OnCreateParticle );
     g_pExportedEventHandler->Add( EventType::OnWorldDraw, OnDraw );
@@ -115,7 +87,7 @@ extern "C" bool __declspec(dllexport, noinline, code_seg(".tempc")) __stdcall Zg
 
 extern "C" void __declspec(dllexport, noinline, code_seg(".text")) __stdcall ZgUnload( )
 {
-    OnTerminatePlugin(  );
+    OnTerminatePlugin( );
     g_pExportedEventHandler->Remove( EventType::OnCreateParticle, OnCreateParticle );
     g_pExportedEventHandler->Remove( EventType::OnWorldDraw, OnDraw );
     g_pExportedEventHandler->Remove( EventType::OnPresentDraw, OnPresentDraw );
