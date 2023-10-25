@@ -18,10 +18,22 @@
     <ClInclude Include="stdafx.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Ezreal.hpp">
+    <ClInclude Include="Champions\Katarina.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Draven.hpp">
+    <ClInclude Include="Champions\Vex.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Helpers\Shared.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Helpers\Utility.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Helpers\Spell.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\SdkImport.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -29,13 +41,22 @@
     <ClCompile Include="stdafx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ZgEntry.cpp">
+    <ClCompile Include="Champions\Katarina.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Ezreal.cpp">
+    <ClCompile Include="Champions\Vex.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Draven.cpp">
+    <ClCompile Include="Helpers\Shared.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Helpers\Utility.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Helpers\Spell.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Bootstrap.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
